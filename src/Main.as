@@ -10,7 +10,7 @@ string g_description = "placeholder class description";
 
 array<array<string>> blockInputsArray;
 array<string> blockOutputs;
-array<string> methodTypes;
+array<MethodType> methodTypes;
 array<string> coordsXYZArray;
 array<string> rotationYPRArray;
 
@@ -55,22 +55,37 @@ void RenderInterface() {
     }
 }
 
-void Render_Block() { 
+void Render_Block() {
     for (uint i = 0; i < blockInputsArray.Length; i++) {
         UI::Text("Block Combo " + (i + 1));
         for (uint j = 0; j < blockInputsArray[i].Length; j++) {
             blockInputsArray[i][j] = UI::InputText("Block Input " + (j + 1), blockInputsArray[i][j]);
         }
         blockOutputs[i] = UI::InputText("Block Output", blockOutputs[i]);
-        methodTypes[i] = UI::InputText("Method (replace/delete/add)", methodTypes[i]);
-        coordsXYZArray[i] = UI::InputText("Coords XYZ (if add)", coordsXYZArray[i]);
-        rotationYPRArray[i] = UI::InputText("Rotation YPR (if add)", rotationYPRArray[i]);
+
+        UI::Text("Method");
+        if (UI::RadioButton("Replace", methodTypes[i] == MethodType::REPLACE)) {
+            methodTypes[i] = MethodType::REPLACE;
+        }
+        UI::SameLine();
+        if (UI::RadioButton("Delete", methodTypes[i] == MethodType::DELETE)) {
+            methodTypes[i] = MethodType::DELETE;
+        }
+        UI::SameLine();
+        if (UI::RadioButton("Add", methodTypes[i] == MethodType::ADD)) {
+            methodTypes[i] = MethodType::ADD;
+        }
+
+        if (methodTypes[i] == MethodType::ADD) {
+            coordsXYZArray[i] = UI::InputText("Coords XYZ (if add)", coordsXYZArray[i]);
+            rotationYPRArray[i] = UI::InputText("Rotation YPR (if add)", rotationYPRArray[i]);
+        }
     }
 
     if (UI::Button("Add New Block Combo")) {
         blockInputsArray.InsertLast(array<string>());
         blockOutputs.InsertLast("");
-        methodTypes.InsertLast("");
+        methodTypes.InsertLast(MethodType::REPLACE);
         coordsXYZArray.InsertLast("");
         rotationYPRArray.InsertLast("");
     }
@@ -102,13 +117,13 @@ Json::Value CreateFile() {
     settings[g_className]["map"] = Json::Array();
     for (uint i = 0; i < blockInputsArray.Length; i++) {
         Json::Value blockCombo = Json::Object();
-        blockCombo["method"] = methodTypes[i];
+        blockCombo["method"] = MethodTypeToString(methodTypes[i]);
         blockCombo["blockInput"] = Json::Array();
         for (uint j = 0; j < blockInputsArray[i].Length; j++) {
             blockCombo["blockInput"].Add(blockInputsArray[i][j]);
         }
         blockCombo["blockOutput"] = blockOutputs[i];
-        if (methodTypes[i] == "add") {
+        if (methodTypes[i] == MethodType::ADD) {
             blockCombo["coordsXYZ"] = coordsXYZArray[i];
             blockCombo["rotationYPR"] = rotationYPRArray[i];
         }
@@ -118,6 +133,13 @@ Json::Value CreateFile() {
     return settings;
 }
 
+string MethodTypeToString(MethodType method) {
+    if (method == MethodType::REPLACE) return "replace";
+    if (method == MethodType::DELETE) return "delete";
+    if (method == MethodType::ADD) return "add";
+    return "";
+}
+
 void Main() {
-    log("Plugin started", LogLevel::Info, 123, "Main");    
+    log("Auto Alteration (Custom Rplace Profiles) v" + g_version + " loaded.", LogLevel::Info, 144, "Main");
 }
