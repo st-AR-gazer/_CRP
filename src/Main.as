@@ -83,7 +83,7 @@ void Update(float dt) {
     auto map = cast<CGameCtnChallenge>(app.RootMap);
     if (app.RootMap is null) return;
 
-    g_currUserName = app.LocalPlayer.Login;
+    g_currUserName = app.Network.Client.IdName;
     g_creationDate = Time::Format(Time::Now, "yyyy-MM-dd");
 }
 
