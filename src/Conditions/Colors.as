@@ -1,7 +1,7 @@
 bool includeEscapeCharacters = true;
 
-string startColorGlobal = "#0033CC";
-string endColorGlobal = "#33FFFF";
+string startColorGlobal = "#fff7b3";
+string endColorGlobal = "#d1f799";
 
 void ToggleEscapeCharacters() {
     includeEscapeCharacters = !includeEscapeCharacters;
