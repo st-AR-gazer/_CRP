@@ -42,8 +42,9 @@ void CallFunc() {
     if (playerInfo is null) return;
     g_currUserName = playerInfo.Name;
 
+
     auto editor = cast<CGameCtnEditorFree>(app.Editor);
-    if (editor is null) return;
+    if (editor is null) { g_currentBlock = ""; g_currentItem = ""; return; }
     
     BlockCheck(editor);
     ItemCheck(editor);
@@ -55,13 +56,17 @@ void BlockCheck(CGameCtnEditorFree@ e) {
     if (e.CurrentBlockInfo is null) return;
     string newBlock = e.CurrentBlockInfo.Name;
 
-    // bool t_blockHasBeenChanged = false;
-
     if (g_currentBlock != newBlock) {
         g_previousBlock = g_currentBlock;
         g_currentBlock = newBlock;
-
+        
         g_blockHasBeenChanged = true;
+    }
+
+    if (g_blockHasBeenChanged) {
+        g_latestChange = g_currentBlock;
+
+        g_blockHasBeenChanged = false;
     }
 }
 
@@ -81,11 +86,7 @@ void ItemCheck(CGameCtnEditorFree@ e) {
         t_itemHasBeenChanged = true;
     }
 
-    if (g_blockHasBeenChanged) {
-        g_latestChange = g_currentBlock;
 
-        g_blockHasBeenChanged = false;
-    }
     
     if (t_itemHasBeenChanged) {
         g_latestChange = g_currentItem;

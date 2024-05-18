@@ -40,7 +40,7 @@ void Render() {
 
         UI::Text(ColorizeString("List of combos to replace/delete/add/move:"));
         for (uint i = 0; i < blockInputsArray.Length; i++) {
-            UI::Text("Combo " + (i + 1));
+            UI::Text("Index " + (i + 1));
             UI::SameLine();
             UI::Text("Method: " + MethodTypeToString(methodTypes[i]));
             UI::SameLine();
@@ -58,6 +58,8 @@ void Render() {
             } else {
                 UI::Text("No Inputs");
             }
+
+            UI::Separator();
 
             blockOutputs[i] = UI::InputText("New Output " + (i + 1), blockOutputs[i]);
 
@@ -83,7 +85,7 @@ void Render() {
                 rotationYPRArray[i] = UI::InputFloat3("Rotation YPR " + (i + 1), rotationYPRArray[i]);
             }
 
-            if (UI::Button("Add Input to Combo " + (i + 1))) {
+            if (UI::Button("Add Input to Index " + (i + 1))) {
                 bool exists = false;
                 for (uint k = 0; k < blockInputsArray[i].Length; k++) {
                     if (blockInputsArray[i][k] == g_latestChange) {
@@ -95,9 +97,13 @@ void Render() {
                     blockInputsArray[i].InsertLast(g_latestChange);
                 }
             }
+            UI::SameLine();
+            if (UI::Button("Add Output to Index " + (i + 1))) {
+                blockOutputs[i] = g_latestChange;
+            }
 
             UI::SameLine();
-            if (UI::Button("Delete Combo " + (i + 1))) {
+            if (UI::Button("Delete Index " + (i + 1))) {
                 blockInputsArray.RemoveAt(i);
                 blockOutputs.RemoveAt(i);
                 methodTypes.RemoveAt(i);
@@ -107,6 +113,8 @@ void Render() {
             }
 
             UI::Separator();
+            UI::Separator();
+
         }
 
         if (UI::Button("Add New Block/Item Combo")) {
