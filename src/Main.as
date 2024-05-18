@@ -39,8 +39,9 @@ void Update(float dt) {
 
     auto editor = cast<CGameCtnEditorFree>(app.Editor);
     if (editor is null) return;
-
-    CGameCtnArticle@ article = cast<CGameCtnArticle>(editor.CurrentItemModel.ArticlePtr);
+    auto cim = cast<CGameItemModel>(editor.CurrentItemModel);
+    if (cim is null) return;
+    auto article = cast<CGameCtnArticle>(cim.ArticlePtr);
     if (article is null) return;
 
     auto net = cast<CGameNetwork>(app.Network);
