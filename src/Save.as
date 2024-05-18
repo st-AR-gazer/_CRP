@@ -14,14 +14,24 @@ Json::Value CreateFile() {
     for (uint i = 0; i < blockInputsArray.Length; i++) {
         Json::Value blockCombo = Json::Object();
         blockCombo["method"] = MethodTypeToString(methodTypes[i]);
-        blockCombo["blockInput"] = Json::Array();
+        blockCombo["source"] = Json::Array();
         for (uint j = 0; j < blockInputsArray[i].Length; j++) {
-            blockCombo["blockInput"].Add(blockInputsArray[i][j]);
+            blockCombo["source"].Add(blockInputsArray[i][j]);
         }
-        blockCombo["blockOutput"] = blockOutputs[i];
-        if (methodTypes[i] == MethodType::ADD) {
-            blockCombo["coordsXYZ"] = coordsXYZArray[i];
-            blockCombo["rotationYPR"] = rotationYPRArray[i];
+        if (methodTypes[i] == MethodType::REPLACE || methodTypes[i] == MethodType::ADD) {
+            blockCombo["new"] = blockOutputs[i];
+        }
+        if (methodTypes[i] == MethodType::ADD || methodTypes[i] == MethodType::MOVE) {
+            vec3 coords = coordsXYZArray[i];
+            vec3 rotation = rotationYPRArray[i];
+            blockCombo["coords"] = Json::Object();
+            blockCombo["coords"]["x"] = coords.x;
+            blockCombo["coords"]["y"] = coords.y;
+            blockCombo["coords"]["z"] = coords.z;
+            blockCombo["rotation"] = Json::Object();
+            blockCombo["rotation"]["y"] = rotation.y;
+            blockCombo["rotation"]["p"] = rotation.z;
+            blockCombo["rotation"]["r"] = rotation.x;
         }
         settings[g_className]["map"].Add(blockCombo);
     }
