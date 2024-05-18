@@ -11,19 +11,19 @@ Json::Value CreateFile() {
 
     // map
     settings[g_className]["map"] = Json::Array();
-    for (uint i = 0; i < blockInputsArray.Length; i++) {
+    for (uint i = 0; i < g_blockInputsArray.Length; i++) {
         Json::Value blockCombo = Json::Object();
-        blockCombo["method"] = MethodTypeToString(methodTypes[i]);
+        blockCombo["method"] = MethodTypeToString(g_methodTypes[i]);
         blockCombo["source"] = Json::Array();
-        for (uint j = 0; j < blockInputsArray[i].Length; j++) {
-            blockCombo["source"].Add(blockInputsArray[i][j]);
+        for (uint j = 0; j < g_blockInputsArray[i].Length; j++) {
+            blockCombo["source"].Add(g_blockInputsArray[i][j]);
         }
-        if (methodTypes[i] == MethodType::REPLACE || methodTypes[i] == MethodType::ADD) {
-            blockCombo["new"] = blockOutputs[i];
+        if (g_methodTypes[i] == MethodType::REPLACE || g_methodTypes[i] == MethodType::ADD) {
+            blockCombo["new"] = g_blockOutputs[i];
         }
-        if (methodTypes[i] == MethodType::ADD || methodTypes[i] == MethodType::MOVE) {
-            vec3 coords = coordsXYZArray[i];
-            vec3 rotation = rotationYPRArray[i];
+        if (g_methodTypes[i] == MethodType::ADD || g_methodTypes[i] == MethodType::MOVE) {
+            vec3 coords = g_coordsXYZArray[i];
+            vec3 rotation = g_rotationYPRArray[i];
             blockCombo["coords"] = Json::Object();
             blockCombo["coords"]["x"] = coords.x;
             blockCombo["coords"]["y"] = coords.y;

@@ -11,3 +11,13 @@ void OpenFolder(const string &in path) {
         OpenExplorerPath(path);
     }
 }
+
+bool g_trunchateAll = false;
+void DeleteAll() {
+    g_blockInputsArray.Resize(0);
+    g_blockOutputs.Resize(0);
+    g_methodTypes.Resize(0);
+    g_coordsXYZArray.Resize(0);
+    g_rotationYPRArray.Resize(0);
+    g_trunchateAll = false;
+}

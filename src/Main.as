@@ -10,11 +10,11 @@ string g_description = "placeholder class description";
 
 
 
-array<array<string>> blockInputsArray;
-array<string> blockOutputs;
-array<MethodType> methodTypes;
-array<vec3> coordsXYZArray;
-array<vec3> rotationYPRArray;
+array<array<string>> g_blockInputsArray;
+array<string> g_blockOutputs;
+array<MethodType> g_methodTypes;
+array<vec3> g_coordsXYZArray;
+array<vec3> g_rotationYPRArray;
 
 enum MethodType {
     REPLACE,

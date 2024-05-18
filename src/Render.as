@@ -1,6 +1,6 @@
 string filePath = "";
 
-void Render() {
+void RenderInterface() {
     if (g_currentItem == "New Item") {
         g_currentItem = "placeholder item name";
     }
@@ -39,19 +39,24 @@ void Render() {
         UI::Separator();
 
         UI::Text(ColorizeString("List of combos to replace/delete/add/move:"));
-        for (uint i = 0; i < blockInputsArray.Length; i++) {
+        if (g_blockInputsArray.Length != 0) {
+            if (UI::Button("Truncate All")) { DeleteAll(); }
+        }
+
+        UI::Separator();
+        for (uint i = 0; i < g_blockInputsArray.Length; i++) {
             UI::Text("Index " + (i + 1));
             UI::SameLine();
-            UI::Text("Method: " + MethodTypeToString(methodTypes[i]));
+            UI::Text("Method: " + MethodTypeToString(g_methodTypes[i]));
             UI::SameLine();
 
             UI::Text("Block Inputs:");
-            if (blockInputsArray[i].Length > 0) {
-                for (uint j = 0; j < blockInputsArray[i].Length; j++) {
-                    blockInputsArray[i][j] = UI::InputText("Input " + (i + 1) + "_" + (j + 1), blockInputsArray[i][j]);
+            if (g_blockInputsArray[i].Length > 0) {
+                for (uint j = 0; j < g_blockInputsArray[i].Length; j++) {
+                    g_blockInputsArray[i][j] = UI::InputText("Input " + (i + 1) + "_" + (j + 1), g_blockInputsArray[i][j]);
                     UI::SameLine();
                     if (UI::Button("Delete##Input" + (i + 1) + "_" + (j + 1))) {
-                        blockInputsArray[i].RemoveAt(j);
+                        g_blockInputsArray[i].RemoveAt(j);
                         j--;
                     }
                 }
@@ -61,54 +66,54 @@ void Render() {
 
             UI::Separator();
 
-            blockOutputs[i] = UI::InputText("New Output " + (i + 1), blockOutputs[i]);
+            g_blockOutputs[i] = UI::InputText("New Output " + (i + 1), g_blockOutputs[i]);
 
             UI::SameLine();
-            if (UI::RadioButton("Replace##" + (i + 1), methodTypes[i] == MethodType::REPLACE)) {
-                methodTypes[i] = MethodType::REPLACE;
+            if (UI::RadioButton("Replace##" + (i + 1), g_methodTypes[i] == MethodType::REPLACE)) {
+                g_methodTypes[i] = MethodType::REPLACE;
             }
             UI::SameLine();
-            if (UI::RadioButton("Delete##" + (i + 1), methodTypes[i] == MethodType::DELETE)) {
-                methodTypes[i] = MethodType::DELETE;
+            if (UI::RadioButton("Delete##" + (i + 1), g_methodTypes[i] == MethodType::DELETE)) {
+                g_methodTypes[i] = MethodType::DELETE;
             }
             UI::SameLine();
-            if (UI::RadioButton("Add##" + (i + 1), methodTypes[i] == MethodType::ADD)) {
-                methodTypes[i] = MethodType::ADD;
+            if (UI::RadioButton("Add##" + (i + 1), g_methodTypes[i] == MethodType::ADD)) {
+                g_methodTypes[i] = MethodType::ADD;
             }
             UI::SameLine();
-            if (UI::RadioButton("Move##" + (i + 1), methodTypes[i] == MethodType::MOVE)) {
-                methodTypes[i] = MethodType::MOVE;
+            if (UI::RadioButton("Move##" + (i + 1), g_methodTypes[i] == MethodType::MOVE)) {
+                g_methodTypes[i] = MethodType::MOVE;
             }
 
-            if (methodTypes[i] == MethodType::ADD || methodTypes[i] == MethodType::MOVE) {
-                coordsXYZArray[i] = UI::InputFloat3("Coords XYZ " + (i + 1), coordsXYZArray[i]);
-                rotationYPRArray[i] = UI::InputFloat3("Rotation YPR " + (i + 1), rotationYPRArray[i]);
+            if (g_methodTypes[i] == MethodType::ADD || g_methodTypes[i] == MethodType::MOVE) {
+                g_coordsXYZArray[i] = UI::InputFloat3("Coords XYZ " + (i + 1), g_coordsXYZArray[i]);
+                g_rotationYPRArray[i] = UI::InputFloat3("Rotation YPR " + (i + 1), g_rotationYPRArray[i]);
             }
 
             if (UI::Button("Add Input to Index " + (i + 1))) {
                 bool exists = false;
-                for (uint k = 0; k < blockInputsArray[i].Length; k++) {
-                    if (blockInputsArray[i][k] == g_latestChange) {
+                for (uint k = 0; k < g_blockInputsArray[i].Length; k++) {
+                    if (g_blockInputsArray[i][k] == g_latestChange) {
                         exists = true;
                         break;
                     }
                 }
                 if (!exists && g_latestChange != "") {
-                    blockInputsArray[i].InsertLast(g_latestChange);
+                    g_blockInputsArray[i].InsertLast(g_latestChange);
                 }
             }
             UI::SameLine();
             if (UI::Button("Add Output to Index " + (i + 1))) {
-                blockOutputs[i] = g_latestChange;
+                g_blockOutputs[i] = g_latestChange;
             }
 
             UI::SameLine();
             if (UI::Button("Delete Index " + (i + 1))) {
-                blockInputsArray.RemoveAt(i);
-                blockOutputs.RemoveAt(i);
-                methodTypes.RemoveAt(i);
-                coordsXYZArray.RemoveAt(i);
-                rotationYPRArray.RemoveAt(i);
+                g_blockInputsArray.RemoveAt(i);
+                g_blockOutputs.RemoveAt(i);
+                g_methodTypes.RemoveAt(i);
+                g_coordsXYZArray.RemoveAt(i);
+                g_rotationYPRArray.RemoveAt(i);
                 i--;
             }
 
@@ -118,11 +123,11 @@ void Render() {
         }
 
         if (UI::Button("Add New Block/Item Combo")) {
-            blockInputsArray.InsertLast(array<string>());
-            blockOutputs.InsertLast("");
-            methodTypes.InsertLast(MethodType::REPLACE);
-            coordsXYZArray.InsertLast(vec3());
-            rotationYPRArray.InsertLast(vec3());
+            g_blockInputsArray.InsertLast(array<string>());
+            g_blockOutputs.InsertLast("");
+            g_methodTypes.InsertLast(MethodType::REPLACE);
+            g_coordsXYZArray.InsertLast(vec3());
+            g_rotationYPRArray.InsertLast(vec3());
         }
 
         UI::Separator();
