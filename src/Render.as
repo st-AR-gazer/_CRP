@@ -1,5 +1,11 @@
 string filePath = "";
 
+void RenderMenu() {
+    if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
+        S_showInterface = !S_showInterface;
+    }
+}
+
 void RenderInterface() {
     if (g_currentItem == "New Item") {
         g_currentItem = "placeholder item name";
@@ -10,7 +16,7 @@ void RenderInterface() {
 
     if (!S_showInterface) return;
 
-    if (UI::Begin("CRP (Auto Alteration) Helper", S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
 
         UI::Text(ColorizeString("Static Information"));
         UI::Text("Current User: " + g_currUserName);
