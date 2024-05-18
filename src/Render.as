@@ -59,7 +59,7 @@ void Render() {
                 UI::Text("No Inputs");
             }
 
-            blockOutputs[i] = UI::InputText("Block Output " + (i + 1), blockOutputs[i]);
+            blockOutputs[i] = UI::InputText("New Output " + (i + 1), blockOutputs[i]);
 
             UI::SameLine();
             if (UI::RadioButton("Replace##" + (i + 1), methodTypes[i] == MethodType::REPLACE)) {

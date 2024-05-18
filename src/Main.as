@@ -30,42 +30,50 @@ string g_latestChange = "placeholder latest change";
 string g_previousBlock = g_currentBlock;
 string g_previousItem = g_currentItem;
 
-void Update(float dt) {
+void CallFunc() {
     auto app = cast<CTrackMania>(GetApp());
     if (app is null) return;
-
+    g_creationDate = app.OSUTCDate;
     auto map = cast<CGameCtnChallenge>(app.RootMap);
     if (map is null) return;
+    auto net = cast<CGameNetwork>(app.Network);
+    if (net is null) return;
+    CTrackManiaPlayerInfo@ playerInfo = cast<CTrackManiaPlayerInfo>(net.PlayerInfos[0]);
+    if (playerInfo is null) return;
+    g_currUserName = playerInfo.Name;
 
     auto editor = cast<CGameCtnEditorFree>(app.Editor);
     if (editor is null) return;
-    auto cim = cast<CGameItemModel>(editor.CurrentItemModel);
-    if (cim is null) return;
-    auto article = cast<CGameCtnArticle>(cim.ArticlePtr);
-    if (article is null) return;
+    
+    BlockCheck(editor);
+    ItemCheck(editor);
+}
 
-    auto net = cast<CGameNetwork>(app.Network);
-    if (net is null) return;
+bool g_blockHasBeenChanged;
 
-    CTrackManiaPlayerInfo@ playerInfo = cast<CTrackManiaPlayerInfo>(net.PlayerInfos[0]);
-    if (playerInfo is null) return;
+void BlockCheck(CGameCtnEditorFree@ e) {
+    if (e.CurrentBlockInfo is null) return;
+    string newBlock = e.CurrentBlockInfo.Name;
 
-    g_currUserName = playerInfo.Name;
-    g_creationDate = app.OSUTCDate;
-
-    string newBlock = editor.CurrentBlockInfo.Name;
-    string newItem = article.Name;
-
-    bool t_blockHasBeenChanged = false;
-    bool t_itemHasBeenChanged = false;
+    // bool t_blockHasBeenChanged = false;
 
     if (g_currentBlock != newBlock) {
         g_previousBlock = g_currentBlock;
         g_currentBlock = newBlock;
 
-        t_blockHasBeenChanged = true;
+        g_blockHasBeenChanged = true;
     }
+}
 
+void ItemCheck(CGameCtnEditorFree@ e) {
+    auto cim = cast<CGameItemModel>(e.CurrentItemModel);
+    if (cim is null) return;
+    auto article = cast<CGameCtnArticle>(cim.ArticlePtr);
+    if (article is null) return;
+
+    bool t_itemHasBeenChanged = false;
+
+    string newItem = article.Name;
     if (g_currentItem != newItem) {
         g_previousItem = g_currentItem;
         g_currentItem = newItem;
@@ -73,10 +81,10 @@ void Update(float dt) {
         t_itemHasBeenChanged = true;
     }
 
-    if (t_blockHasBeenChanged) {
+    if (g_blockHasBeenChanged) {
         g_latestChange = g_currentBlock;
 
-        t_blockHasBeenChanged = false;
+        g_blockHasBeenChanged = false;
     }
     
     if (t_itemHasBeenChanged) {
@@ -87,5 +95,9 @@ void Update(float dt) {
 }
 
 void Main() {
+    while (true) {
+        CallFunc();
+        yield();
+    }
     log("Auto Alteration (Custom Replace Profiles) v" + g_version + " loaded.", LogLevel::Info, 68, "Main");
 }

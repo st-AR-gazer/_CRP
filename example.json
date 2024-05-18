@@ -14,11 +14,13 @@
         },
         {
             "method": "delete",
-            "source": ["BLOCKNAME1", "BLOCKNAME2"]
+            "source": ["BLOCKNAME1", "BLOCKNAME2"],
+            "new": "BLOCKNAME"
         },
         {
             "method": "add",
             "source": ["BLOCKNAME1"],
+            "new": "BLOCKNAME",
             "coords": {
                 "x": 0,
                 "y": 0,
@@ -32,7 +34,8 @@
         },
         {
             "method": "move",
-            "source": "RoadTechFinish",
+            "source": ["RoadTechFinish"],
+            "new": "BLOCKNAME",
             "newBlockType": "Block",
             "offset": {
                 "x": 0,
@@ -40,13 +43,10 @@
                 "z": 0
             },
             "rotation": {
-                "x": 0,
                 "y": 0,
-                "z": 0
+                "p": 0,
+                "r": 0
             }
-        },
-        {
-            "method": "placeStaged"
         }
     ]
 }
