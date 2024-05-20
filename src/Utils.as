@@ -20,4 +20,5 @@ void DeleteAll() {
     g_coordsXYZArray.Resize(0);
     g_rotationYPRArray.Resize(0);
     g_trunchateAll = false;
+    g_hiddenCount = 0;
 }

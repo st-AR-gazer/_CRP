@@ -1,4 +1,6 @@
 string filePath = "";
+bool showAllItems = true;
+uint g_hiddenCount = 0;
 
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
@@ -25,13 +27,11 @@ void RenderInterface() {
 
         UI::Separator();
         UI::Separator();
-        UI::Separator();
 
         UI::Text(ColorizeString("Class Information"));
         g_className = UI::InputText("Class/File Name: ", g_className);
         g_description = UI::InputText("Description: ", g_description);
 
-        UI::Separator();
         UI::Separator();
         UI::Separator();
 
@@ -42,26 +42,40 @@ void RenderInterface() {
 
         UI::Separator();
         UI::Separator();
-        UI::Separator();
 
         UI::Text(ColorizeString("List of combos to replace/delete/add/move:"));
         if (g_blockInputsArray.Length != 0) {
             if (UI::Button("Truncate All")) { DeleteAll(); }
         }
 
+        uint hiddenCount = 0;
+        if (g_hiddenCount > 0) {
+            UI::Text("Hidden Items: " + g_hiddenCount);
+            if (UI::Button("Reveal Hidden")) {
+                showAllItems = !showAllItems;
+            }
+        }
+
         UI::Separator();
+
         for (uint i = 0; i < g_blockInputsArray.Length; i++) {
+            if (!showAllItems && i < g_blockInputsArray.Length - 3) {
+                hiddenCount++;
+                g_hiddenCount = hiddenCount;
+                continue;
+            }
+
             UI::Text("Index " + (i + 1));
             UI::SameLine();
             UI::Text("Method: " + MethodTypeToString(g_methodTypes[i]));
             UI::SameLine();
-
             UI::Text("Block Inputs:");
+
             if (g_blockInputsArray[i].Length > 0) {
                 for (uint j = 0; j < g_blockInputsArray[i].Length; j++) {
                     g_blockInputsArray[i][j] = UI::InputText("Input " + (i + 1) + "_" + (j + 1), g_blockInputsArray[i][j]);
                     UI::SameLine();
-                    if (UI::Button("Delete##Input" + (i + 1) + "_" + (j + 1))) {
+                    if (UI::ButtonColored("Delete##Input" + (i + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
                         g_blockInputsArray[i].RemoveAt(j);
                         j--;
                     }
@@ -91,12 +105,10 @@ void RenderInterface() {
                 g_methodTypes[i] = MethodType::MOVE;
             }
 
-            if (g_methodTypes[i] == MethodType::ADD || g_methodTypes[i] == MethodType::MOVE) {
-                g_coordsXYZArray[i] = UI::InputFloat3("Coords XYZ " + (i + 1), g_coordsXYZArray[i]);
-                g_rotationYPRArray[i] = UI::InputFloat3("Rotation YPR " + (i + 1), g_rotationYPRArray[i]);
-            }
+            bool isLastIndex = (i == g_blockInputsArray.Length - 1);
+            float h = isLastIndex ? 0.33f : 0.61f;
 
-            if (UI::Button("Add Input to Index " + (i + 1))) {
+            if (UI::ButtonColored("Add Input to Index " + (i + 1), h, 0.6f, 0.6f)) {
                 bool exists = false;
                 for (uint k = 0; k < g_blockInputsArray[i].Length; k++) {
                     if (g_blockInputsArray[i][k] == g_latestChange) {
@@ -109,12 +121,11 @@ void RenderInterface() {
                 }
             }
             UI::SameLine();
-            if (UI::Button("Add Output to Index " + (i + 1))) {
+            if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
                 g_blockOutputs[i] = g_latestChange;
             }
-
             UI::SameLine();
-            if (UI::Button("Delete Index " + (i + 1))) {
+            if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
                 g_blockInputsArray.RemoveAt(i);
                 g_blockOutputs.RemoveAt(i);
                 g_methodTypes.RemoveAt(i);
@@ -124,9 +135,8 @@ void RenderInterface() {
             }
 
             UI::Separator();
-            UI::Separator();
-
         }
+
 
         if (UI::Button("Add New Block/Item Combo")) {
             g_blockInputsArray.InsertLast(array<string>());
