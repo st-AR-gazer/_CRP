@@ -44,17 +44,22 @@ void RenderInterface() {
         UI::Separator();
 
         UI::Text(ColorizeString("List of combos to replace/delete/add/move:"));
-        if (g_blockInputsArray.Length != 0) {
-            if (UI::Button("Truncate All")) { DeleteAll(); }
-        }
 
+        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) { DeleteAll(); }
+        UI::SameLine();
         uint hiddenCount = 0;
-        if (g_hiddenCount > 0) {
-            UI::Text("Hidden Items: " + g_hiddenCount);
-            if (UI::Button("Reveal Hidden")) {
+
+        if (g_hiddenCount > 0 && showAllItems) {
+            if (UI::Button("Hide Indexes")) {
                 showAllItems = !showAllItems;
             }
+        } else {
+            if (UI::Button("Show Indexes")) {
+                showAllItems = !showAllItems;
+            }
+
         }
+        UI::Text("Hidden Items: " + g_hiddenCount);
 
         UI::Separator();
 

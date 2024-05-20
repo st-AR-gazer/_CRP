@@ -1,13 +1,13 @@
 Json::Value CreateFile() {
     Json::Value settings = Json::Object();
     settings[g_className] = Json::Object();
-    settings[g_className]["version"] = g_version;
-    settings[g_className]["description"] = g_description;
 
     // metadata
     settings[g_className]["metadata"] = Json::Object();
+    settings[g_className]["metadata"]["version"] = g_version;
     settings[g_className]["metadata"]["author"] = g_currUserName;
     settings[g_className]["metadata"]["creationDate"] = g_creationDate;
+    settings[g_className]["metadata"]["description"] = g_description;
 
     // map
     settings[g_className]["map"] = Json::Array();
