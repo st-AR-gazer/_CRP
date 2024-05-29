@@ -1,3 +1,6 @@
+namespace _LinCol 
+{
+
 bool includeEscapeCharacters = true;
 
 string startColorGlobal = "#fff7b3";
@@ -19,7 +22,7 @@ int HexToInt(const string &in hex) {
         } else if (charValue >= 97 && charValue <= 102) { // 'a' to 'f'
             value += 10 + (charValue - 97);
         } else {
-            log("Invalid character in hex string: " + hex[i], LogLevel::Error, 22, "HexToInt");
+            log("Invalid character in hex string: " + hex[i], LogLevel::Error, 25, "HexToInt");
             return -1;
         }
     }
@@ -83,3 +86,5 @@ string ColorizeString(const string &in inputString) {
 
     return coloredString;
 }
+
+} // namespace linColor
