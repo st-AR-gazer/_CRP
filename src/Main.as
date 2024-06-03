@@ -28,6 +28,7 @@ string g_latestChange = "placeholder latest change";
 string g_previousBlock = g_currentBlock;
 string g_previousItem = g_currentItem;
 
+
 array<string> knownBlocks;
 array<string> knownItems;
 
@@ -40,11 +41,9 @@ void Main() {
     log("Auto Alteration (Custom Replace Profiles) v " + g_version + " loaded.", LogLevel::Info, 68, "Main");
 }
 
-array<string> LoadJsonArray(string filePath) {
-    IO::File f(filePath, IO::FileMode::Read);
-    f.Open();
+array<string> LoadJsonArray(const string &in filePath) {
+    IO::FileSource f(filePath);
     string fileContents = f.ReadToEnd();
-    f.Close();
 
     array<string> elements;
 
@@ -63,9 +62,6 @@ array<string> LoadJsonArray(string filePath) {
 
     return elements;
 }
-
-array<string> knownBlocks;
-array<string> knownItems;
 
 void LoadBlockAndItemLists() {
     knownBlocks = LoadJsonArray("src/data/BlockNames.json");
@@ -91,31 +87,10 @@ void CallFunc() {
 }
 
 void CheckChanges(CGameCtnEditorFree@ e) {
-    bool hasChanged = false;
 
-    if (e.CurrentBlockInfo !is null) {
-        string newBlock = e.CurrentBlockInfo.Name;
-        if (g_currentBlock != newBlock) {
-            g_previousBlock = g_currentBlock;
-            g_currentBlosck = newBlock;
-            hasChanged = true;
-        }
-    }
+    string selectedNodeName = e.PluginMapType.Inventory.CurrentSelectedNode.Name;
 
-    auto cim = cast<CGameItemModel>(e.CurrentItemModel);
-    if (cim !is null) {
-        auto article = cast<CGameCtnArticle>(cim.ArticlePtr);
-        if (article !is null) {
-            string newItem = article.Name;
-            if (g_currentItem != newItem) {
-                g_previousItem = g_currentItem;
-                g_currentItem = newItem;
-                hasChanged = true;
-            }
-        }
-    }
-
-    if (hasChanged) {
-        g_latestChange = g_currentBlock != "" ? g_currentBlock : g_currentItem;
+    if (selectedNodeName != "") {
+        g_latestChange = selectedNodeName;
     }
 }

@@ -20,7 +20,7 @@ void RenderMenu() {
 void RenderInterface() {
     if (!S_showInterface) return;
 
-    if (UI::Begin("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
+    if (UI::Begin(Colorize(Icons::Connectdevelop + Icons::Random + "CRP (Auto Alteration) Helper", {"0063eC", "33FFFF"}), S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
         
         UI::Text("Static Information");
         UI::Text("Current User: " + g_currUserName);
@@ -34,9 +34,7 @@ void RenderInterface() {
         UI::Separator();
 
         UI::Text("Current Block/Item Information");
-        UI::Text("Current Block: " + g_currentBlock);
-        UI::Text("Current Item: " + g_currentItem);
-        UI::Text("Latest Change: " + g_latestChange);
+        UI::Text("Latest Change: " + Colorize(g_latestChange, {"fff7b3", "d1f799"}));
         UI::Separator();
 
         UI::Text("List of combos to replace/delete/add/move:");
@@ -62,57 +60,7 @@ void RenderInterface() {
             UI::SameLine();
             UI::Text("Block Inputs:");
 
-            if (g_blockInputsArray[i].Length > 0) {
-                for (uint j = 0; j < g_blockInputsArray[i].Length; j++) {
-                    g_blockInputsArray[i][j] = UI::InputText("Input " + (i + 1) + "_" + (j + 1), g_blockInputsArray[i][j]);
-                    UI::SameLine();
-                    if (UI::ButtonColored("Delete##Input" + (i + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
-                        g_blockInputsArray[i].RemoveAt(j);
-                        j--;
-                    }
-                }
-            } else {
-                UI::Text("No Inputs");
-            }
-
-            UI::Separator();
-
-            g_blockOutputs[i] = UI::InputText("New Output " + (i + 1), g_blockOutputs[i]);
-
-            UI::SameLine();
-            if (UI::RadioButton("Replace##" + (i + 1), g_methodTypes[i] == MethodType::REPLACE)) {
-                g_methodTypes[i] = MethodType::REPLACE;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("Delete##" + (i + 1), g_methodTypes[i] == MethodType::DELETE)) {
-                g_methodTypes[i] = MethodType::DELETE;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("Place##" + (i + 1), g_methodTypes[i] == MethodType::PLACE)) {
-                g_methodTypes[i] = MethodType::PLACE;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("PlaceRelative##" + (i + 1), g_methodTypes[i] == MethodType::PLACERELATIVE)) {
-                g_methodTypes[i] = MethodType::PLACERELATIVE;
-            }
-
-            UI::Text("Block Type: ");
-            if (UI::RadioButton("Auto##" + (i + 1), g_blockTypes[i] == BlockType::AUTO)) {
-                g_blockTypes[i] = BlockType::AUTO;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("Block##" + (i + 1), g_blockTypes[i] == BlockType::BLOCK)) {
-                g_blockTypes[i] = BlockType::BLOCK;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("Item##" + (i + 1), g_blockTypes[i] == BlockType::ITEM)) {
-                g_blockTypes[i] = BlockType::ITEM;
-            }
-            UI::SameLine();
-            if (UI::RadioButton("Custom##" + (i + 1), g_blockTypes[i] == BlockType::CUSTOM)) {
-                g_blockTypes[i] = BlockType::CUSTOM;
-            }
-
+            RenderBlockTypeUI(i);
             bool isLastIndex = (i == g_blockInputsArray.Length - 1);
             float h = isLastIndex ? 0.33f : 0.61f;
 
@@ -142,9 +90,25 @@ void RenderInterface() {
                 g_blockTypes.RemoveAt(i);
                 i--;
             }
+            UI::Separator();
 
+            switch (g_methodTypes[i]) {
+                case MethodType::REPLACE:
+                    RenderReplaceUI(i);
+                    break;
+                case MethodType::DELETE:
+                    RenderDeleteUI(i);
+                    break;
+                case MethodType::PLACE:
+                    RenderPlaceUI(i);
+                    break;
+                case MethodType::PLACERELATIVE:
+                    RenderPlaceRelativeUI(i);
+                    break;
+            }
             UI::Separator();
         }
+        UI::Separator();
 
         if (UI::Button("Add New Block/Item Combo")) {
             g_blockInputsArray.InsertLast(array<string>());
@@ -154,12 +118,85 @@ void RenderInterface() {
             g_rotationYPRArray.InsertLast(vec3());
             g_blockTypes.InsertLast(BlockType::AUTO);
         }
-
-        UI::Separator();
-
+        
         RenderSaveOptions();
 
         UI::End();
+    }
+}
+
+void RenderReplaceUI(uint index) {
+    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
+        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+        UI::SameLine();
+        if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
+            g_blockInputsArray[index].RemoveAt(j);
+            j--;
+        }
+    }
+    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+}
+
+void RenderDeleteUI(uint index) {
+    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
+        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+        UI::SameLine();
+        if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
+            g_blockInputsArray[index].RemoveAt(j);
+            j--;
+        }
+    }
+}
+
+void RenderPlaceUI(uint index) {
+    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+    g_coordsXYZArray[index] = UI::InputFloat3("Position " + (index + 1), g_coordsXYZArray[index]);
+    g_rotationYPRArray[index] = UI::InputFloat3("Rotation " + (index + 1), g_rotationYPRArray[index]);
+}
+
+void RenderPlaceRelativeUI(uint index) {
+    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
+        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+        UI::SameLine();
+        if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
+            g_blockInputsArray[index].RemoveAt(j);
+            j--;
+        }
+    }
+    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+}
+
+void RenderBlockTypeUI(uint index) {
+    if (UI::RadioButton("Replace##" + (index + 1), g_methodTypes[index] == MethodType::REPLACE)) {
+        g_methodTypes[index] = MethodType::REPLACE;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("Delete##" + (index + 1), g_methodTypes[index] == MethodType::DELETE)) {
+        g_methodTypes[index] = MethodType::DELETE;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("Place##" + (index + 1), g_methodTypes[index] == MethodType::PLACE)) {
+        g_methodTypes[index] = MethodType::PLACE;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("PlaceRelative##" + (index + 1), g_methodTypes[index] == MethodType::PLACERELATIVE)) {
+        g_methodTypes[index] = MethodType::PLACERELATIVE;
+    }
+
+    if (UI::RadioButton("Auto##" + (index + 1), g_blockTypes[index] == BlockType::AUTO)) {
+        g_blockTypes[index] = BlockType::AUTO;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("Block##" + (index + 1), g_blockTypes[index] == BlockType::BLOCK)) {
+        g_blockTypes[index] = BlockType::BLOCK;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("Item##" + (index + 1), g_blockTypes[index] == BlockType::ITEM)) {
+        g_blockTypes[index] = BlockType::ITEM;
+    }
+    UI::SameLine();
+    if (UI::RadioButton("Custom##" + (index + 1), g_blockTypes[index] == BlockType::CUSTOM)) {
+        g_blockTypes[index] = BlockType::CUSTOM;
     }
 }
 
@@ -167,6 +204,7 @@ void RenderSaveOptions() {
     if (UI::Button("Save")) {
         GenerateCSharpClass();
     }
+    UI::SameLine();
     if (filePath != "") {
         if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
         UI::Text("File saved at: " + filePath);
