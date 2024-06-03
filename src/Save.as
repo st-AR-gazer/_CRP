@@ -4,7 +4,7 @@ string GenerateCSharpClass() {
     classContent += "    public override void run(Map map){\n";
 
     for (uint i = 0; i < g_blockInputsArray.Length; i++) {
-        classContent += GenerateMethodContent(g_methodTypes[i], g_blockInputsArray[i], g_blockOutputs[i]);
+        classContent += GenerateMethodContent(g_methodTypes[i], g_blockInputsArray[i], g_blockOutputs[i], g_blockTypes[i]);
     }
 
     classContent += "        map.placeStagedBlocks();\n";
@@ -14,16 +14,16 @@ string GenerateCSharpClass() {
     return classContent;
 }
 
-string GenerateMethodContent(MethodType methodType, array<string> inputs, string output) {
+string GenerateMethodContent(MethodType methodType, array<string> inputs, string output, string type = "Block") {
     switch (methodType) {
         case MethodType::REPLACE:
-            return GenerateReplace(inputs, output);
+            return GenerateReplace(inputs, output, type);
         case MethodType::DELETE:
             return GenerateDelete(inputs);
         case MethodType::PLACE:
-            return GeneratePlace(inputs[0], output);
+            return GeneratePlace(inputs[0], output, type);
         case MethodType::PLACERELATIVE:
-            return GeneratePlaceRelative(inputs, output);
+            return GeneratePlaceRelative(inputs, output, type);
         default:
             return "";
     }
@@ -37,8 +37,8 @@ string GenerateMetadata() {
            "// Description: " + g_description + "\n\n";
 }
 
-string GeneratePlace(string block, string newBlock) {
-    return "        map.place(\"" + block + "\", \"" + newBlock + "\");\n";
+string GeneratePlace(string block, string newBlock, string type) {
+    return "        map.place(\"" + block + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
 }
 
 string GeneratePlaceRelative(array<string> blocks, string newBlock, string type) { 
@@ -50,7 +50,11 @@ string GeneratePlaceRelative(array<string> blocks, string newBlock, string type)
 }
 
 string GenerateReplace(array<string> blocks, string newBlock, string type) {
-    return "        map.replace(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType."+ type +");\n";
+    string output = "";
+    for (uint i = 0; i < blocks.Length; i++) {
+        output += "        map.replace(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
+    }
+    return output;
 }
 
 string GenerateDelete(const array<string> &blocks) {

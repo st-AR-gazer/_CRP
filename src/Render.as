@@ -2,6 +2,15 @@ string filePath = "";
 bool showAllItems = true;
 uint g_hiddenCount = 0;
 
+enum BlockType {
+    AUTO,
+    BLOCK,
+    ITEM,
+    CUSTOM
+}
+
+array<BlockType> g_blockTypes;
+
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
         S_showInterface = !S_showInterface;
@@ -9,58 +18,35 @@ void RenderMenu() {
 }
 
 void RenderInterface() {
-    if (g_currentItem == "New Item") {
-        g_currentItem = "placeholder item name";
-    }
-    if (g_currentBlock == "New Block") {
-        g_currentBlock = "placeholder block name";
-    }
-
     if (!S_showInterface) return;
 
     if (UI::Begin("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
-
-        UI::Text(colorize::CS("Static Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
+        
+        UI::Text("Static Information");
         UI::Text("Current User: " + g_currUserName);
         UI::Text("Version: " + g_version);
         UI::Text("Creation Date: " + g_creationDate);
-
-        UI::Separator();
         UI::Separator();
 
-        UI::Text(colorize::CS("Class Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
+        UI::Text("Class Information");
         g_className = UI::InputText("Class/File Name: ", g_className);
         g_description = UI::InputText("Description: ", g_description);
-
-        UI::Separator();
         UI::Separator();
 
-        UI::Text(colorize::CS("Current Block/Item Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
-        UI::Text((g_latestChange == g_currentBlock ? colorize::CS("Current Block: " + g_currentBlock + " <--", {"fff7b3", "d1f799"}, colorize::GradientMode::linear) : "Current Block: " + g_currentBlock));
-        UI::Text((g_latestChange == g_currentItem ? colorize::CS("Current Item: " + g_currentItem + " <--", {"fff7b3", "d1f799"}, colorize::GradientMode::linear) : "Current Item: " + g_currentItem));
-        UI::Text(colorize::CS("Latest Change: " + g_latestChange, {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
-
-        UI::Separator();
+        UI::Text("Current Block/Item Information");
+        UI::Text("Current Block: " + g_currentBlock);
+        UI::Text("Current Item: " + g_currentItem);
+        UI::Text("Latest Change: " + g_latestChange);
         UI::Separator();
 
-        UI::Text(colorize::CS("List of combos to replace/delete/add/move:", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
-
+        UI::Text("List of combos to replace/delete/add/move:");
+        
         if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) { DeleteAll(); }
         UI::SameLine();
         uint hiddenCount = 0;
-
-        if (g_hiddenCount > 0 && showAllItems) {
-            if (UI::Button("Hide Indexes")) {
-                showAllItems = !showAllItems;
-            }
-        } else {
-            if (UI::Button("Show Indexes")) {
-                showAllItems = !showAllItems;
-            }
-
-        }
+        if (UI::Button(showAllItems ? "Hide Indexes" : "Show Indexes")) { showAllItems = !showAllItems; }
+        
         UI::Text("Hidden Items: " + g_hiddenCount);
-
         UI::Separator();
 
         for (uint i = 0; i < g_blockInputsArray.Length; i++) {
@@ -110,6 +96,23 @@ void RenderInterface() {
                 g_methodTypes[i] = MethodType::PLACERELATIVE;
             }
 
+            UI::Text("Block Type: ");
+            if (UI::RadioButton("Auto##" + (i + 1), g_blockTypes[i] == BlockType::AUTO)) {
+                g_blockTypes[i] = BlockType::AUTO;
+            }
+            UI::SameLine();
+            if (UI::RadioButton("Block##" + (i + 1), g_blockTypes[i] == BlockType::BLOCK)) {
+                g_blockTypes[i] = BlockType::BLOCK;
+            }
+            UI::SameLine();
+            if (UI::RadioButton("Item##" + (i + 1), g_blockTypes[i] == BlockType::ITEM)) {
+                g_blockTypes[i] = BlockType::ITEM;
+            }
+            UI::SameLine();
+            if (UI::RadioButton("Custom##" + (i + 1), g_blockTypes[i] == BlockType::CUSTOM)) {
+                g_blockTypes[i] = BlockType::CUSTOM;
+            }
+
             bool isLastIndex = (i == g_blockInputsArray.Length - 1);
             float h = isLastIndex ? 0.33f : 0.61f;
 
@@ -136,12 +139,12 @@ void RenderInterface() {
                 g_methodTypes.RemoveAt(i);
                 g_coordsXYZArray.RemoveAt(i);
                 g_rotationYPRArray.RemoveAt(i);
+                g_blockTypes.RemoveAt(i);
                 i--;
             }
 
             UI::Separator();
         }
-
 
         if (UI::Button("Add New Block/Item Combo")) {
             g_blockInputsArray.InsertLast(array<string>());
@@ -149,6 +152,7 @@ void RenderInterface() {
             g_methodTypes.InsertLast(MethodType::REPLACE);
             g_coordsXYZArray.InsertLast(vec3());
             g_rotationYPRArray.InsertLast(vec3());
+            g_blockTypes.InsertLast(BlockType::AUTO);
         }
 
         UI::Separator();
