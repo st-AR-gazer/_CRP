@@ -25,21 +25,26 @@ void RenderInterface() {
 
     if (UI::Begin(Colorize(Icons::Connectdevelop + Icons::Random + "CRP (Auto Alteration) Helper", {"0063eC", "33FFFF"}), S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
         
+        // Static Information
         UI::Text("Static Information");
         UI::Text("Current User: " + g_currUserName);
         UI::Text("Version: " + g_version);
         UI::Text("Creation Date: " + g_creationDate);
         UI::Separator();
 
+        // Class Information
         UI::Text("Class Information");
+        _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not.");
         g_className = UI::InputText("Class/File Name: ", g_className);
         g_description = UI::InputText("Description: ", g_description);
         UI::Separator();
 
+        // Current Block/Item Information
         UI::Text("Current Block/Item Information");
         UI::Text("Latest Change: " + Colorize(g_latestChange, {"fff7b3", "d1f799"}));
         UI::Separator();
 
+        // List of Combos
         UI::Text("List of combos to replace/delete/add/move:");
         
         if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
@@ -56,7 +61,7 @@ void RenderInterface() {
         if (showTruncateConfirmation) {
             int timeLeft = (confirmationDuration - (Time::Now - truncateStartTime)) / 1000;
             if (timeLeft > 0) {
-                if (UI::ButtonColored("Are you sure? Click to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
+                if (UI::ButtonColored("Are you sure? Click 'HERE' to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
                     TruncateAll();
                     showTruncateConfirmation = false;
                 }
@@ -108,6 +113,7 @@ void RenderInterface() {
                 g_rotationYPRArray.RemoveAt(i);
                 g_blockTypes.RemoveAt(i);
                 i--;
+                continue;
             }
             UI::Separator();
 
@@ -125,7 +131,6 @@ void RenderInterface() {
                     RenderPlaceRelativeUI(i);
                     break;
             }
-            UI::Separator();
         }
         UI::Separator();
 
@@ -138,11 +143,13 @@ void RenderInterface() {
             g_blockTypes.InsertLast(BlockType::AUTO);
         }
         
+        // Save Options
         RenderSaveOptions();
 
         UI::End();
     }
 }
+
 
 void RenderReplaceUI(uint index) {
     for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
@@ -153,7 +160,9 @@ void RenderReplaceUI(uint index) {
             j--;
         }
     }
+    UI::Separator();
     g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+    UI::Separator();
 }
 
 void RenderDeleteUI(uint index) {
@@ -202,10 +211,14 @@ void RenderBlockTypeUI(uint index) {
         g_methodTypes[index] = MethodType::PLACERELATIVE;
     }
 
-    if (UI::RadioButton("Auto##" + (index + 1), g_blockTypes[index] == BlockType::AUTO)) {
-        g_blockTypes[index] = BlockType::AUTO;
+    bool showAuto = g_blockTypes[index] == BlockType::AUTO;
+
+    if (showAuto) {
+        if (UI::RadioButton("Auto##" + (index + 1), g_blockTypes[index] == BlockType::AUTO)) {
+            g_blockTypes[index] = BlockType::AUTO;
+        }
+        UI::SameLine();
     }
-    UI::SameLine();
     if (UI::RadioButton("Block##" + (index + 1), g_blockTypes[index] == BlockType::BLOCK)) {
         g_blockTypes[index] = BlockType::BLOCK;
     }
@@ -221,12 +234,20 @@ void RenderBlockTypeUI(uint index) {
 
 void RenderSaveOptions() {
     if (UI::Button("Save")) {
-        GenerateCSharpClass();
+        string classContent = GenerateCSharpClass();
+        if (classContent != "") {
+            string folderPath = IO::FromStorageFolder("CRP/");
+            filePath = folderPath + g_className + ".cs";
+            if (IO::FolderExists(IO::FromStorageFolder("CRP/")) == false) {
+                IO::CreateFolder(IO::FromStorageFolder("CRP/"));
+            }
+            _IO::SaveToFile(IO::FromStorageFolder("CRP/" + g_className + ".cs"), classContent);
+        }
     }
     UI::SameLine();
     if (filePath != "") {
         if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
-        UI::Text("File saved at: " + filePath);
+        UI::Text("File saved at: \n" + filePath);
     }
 }
 
