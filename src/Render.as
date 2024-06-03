@@ -10,6 +10,9 @@ enum BlockType {
 }
 
 array<BlockType> g_blockTypes;
+bool showTruncateConfirmation = false;
+int truncateStartTime = 0;
+const int confirmationDuration = 10000; // 10 seconds
 
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
@@ -39,13 +42,29 @@ void RenderInterface() {
 
         UI::Text("List of combos to replace/delete/add/move:");
         
-        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) { DeleteAll(); }
+        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
+            showTruncateConfirmation = true;
+            truncateStartTime = Time::Now;
+        }
         UI::SameLine();
         uint hiddenCount = 0;
         if (UI::Button(showAllItems ? "Hide Indexes" : "Show Indexes")) { showAllItems = !showAllItems; }
         
         UI::Text("Hidden Items: " + g_hiddenCount);
         UI::Separator();
+
+        if (showTruncateConfirmation) {
+            int timeLeft = (confirmationDuration - (Time::Now - truncateStartTime)) / 1000;
+            if (timeLeft > 0) {
+                if (UI::ButtonColored("Are you sure? Click to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
+                    TruncateAll();
+                    showTruncateConfirmation = false;
+                }
+            } else {
+                showTruncateConfirmation = false;
+            }
+            UI::Separator();
+        }
 
         for (uint i = 0; i < g_blockInputsArray.Length; i++) {
             if (!showAllItems && i < g_blockInputsArray.Length - 3) {
@@ -209,4 +228,13 @@ void RenderSaveOptions() {
         if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
         UI::Text("File saved at: " + filePath);
     }
+}
+
+void TruncateAll() {
+    g_blockInputsArray.Resize(0);
+    g_blockOutputs.Resize(0);
+    g_methodTypes.Resize(0);
+    g_coordsXYZArray.Resize(0);
+    g_rotationYPRArray.Resize(0);
+    g_blockTypes.Resize(0);
 }
