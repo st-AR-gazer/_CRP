@@ -1,6 +1,9 @@
 string filePath = "";
 bool showAllItems = true;
 uint g_hiddenCount = 0;
+bool showTruncateConfirmation = false;
+int truncateStartTime = 0;
+const int confirmationDuration = 10000;
 
 enum BlockType {
     AUTO,
@@ -10,9 +13,6 @@ enum BlockType {
 }
 
 array<BlockType> g_blockTypes;
-bool showTruncateConfirmation = false;
-int truncateStartTime = 0;
-const int confirmationDuration = 10000; // 10 seconds
 
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
@@ -232,13 +232,18 @@ void RenderBlockTypeUI(uint index) {
     }
 }
 
+
 void RenderSaveOptions() {
-    if (UI::Button("Save")) {
+    bool isClassNameValid = IsValidClassName(g_className);
+    if (!isClassNameValid) {
+        _UI::SimpleTooltip("Class name can only contain alphanumeric characters and underscores.");
+    }
+    if (_UI::DisabledButton(!isClassNameValid, "Save")) {
         string classContent = GenerateCSharpClass();
         if (classContent != "") {
             string folderPath = IO::FromStorageFolder("CRP/");
             filePath = folderPath + g_className + ".cs";
-            if (IO::FolderExists(IO::FromStorageFolder("CRP/")) == false) {
+            if (!IO::FolderExists(IO::FromStorageFolder("CRP/"))) {
                 IO::CreateFolder(IO::FromStorageFolder("CRP/"));
             }
             _IO::SaveToFile(IO::FromStorageFolder("CRP/" + g_className + ".cs"), classContent);
@@ -247,9 +252,10 @@ void RenderSaveOptions() {
     UI::SameLine();
     if (filePath != "") {
         if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
-        UI::Text("File saved at: \n" + filePath);
+        UI::Text("File saved at: " + filePath);
     }
 }
+
 
 void TruncateAll() {
     g_blockInputsArray.Resize(0);

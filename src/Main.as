@@ -14,6 +14,9 @@ array<MethodType> g_methodTypes;
 array<vec3> g_coordsXYZArray;
 array<vec3> g_rotationYPRArray;
 
+array<string> knownBlocks;
+array<string> knownItems;
+
 enum MethodType {
     REPLACE,
     DELETE,
@@ -22,9 +25,6 @@ enum MethodType {
 }
 
 string g_latestChange = "placeholder latest change";
-
-array<string> knownBlocks;
-array<string> knownItems;
 
 void Main() {
     LoadBlockAndItemLists();
@@ -56,7 +56,6 @@ array<string> LoadJsonArray(const string &in filePath) {
     
     return elements;
 }
-
 
 BlockType DetermineBlockType(const string &in name) {
     if (knownBlocks.Find(name) >= 0) return BlockType::BLOCK;
