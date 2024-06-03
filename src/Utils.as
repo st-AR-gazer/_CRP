@@ -1,8 +1,8 @@
 string MethodTypeToString(MethodType method) {
     if (method == MethodType::REPLACE) return "replace";
     if (method == MethodType::DELETE) return "delete";
-    if (method == MethodType::ADD) return "add";
-    if (method == MethodType::MOVE) return "move";
+    if (method == MethodType::PLACE) return "add";
+    if (method == MethodType::PLACERELATIVE) return "move";
     return "";
 }
 

@@ -18,10 +18,10 @@ Json::Value CreateFile() {
         for (uint j = 0; j < g_blockInputsArray[i].Length; j++) {
             blockCombo["source"].Add(g_blockInputsArray[i][j]);
         }
-        if (g_methodTypes[i] == MethodType::REPLACE || g_methodTypes[i] == MethodType::ADD) {
+        if (g_methodTypes[i] == MethodType::REPLACE || g_methodTypes[i] == MethodType::PLACE) {
             blockCombo["new"] = g_blockOutputs[i];
         }
-        if (g_methodTypes[i] == MethodType::ADD || g_methodTypes[i] == MethodType::MOVE) {
+        if (g_methodTypes[i] == MethodType::PLACE || g_methodTypes[i] == MethodType::PLACERELATIVE) {
             vec3 coords = g_coordsXYZArray[i];
             vec3 rotation = g_rotationYPRArray[i];
             blockCombo["coords"] = Json::Object();

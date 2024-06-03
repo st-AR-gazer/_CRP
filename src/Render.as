@@ -20,7 +20,7 @@ void RenderInterface() {
 
     if (UI::Begin("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
 
-        UI::Text(ColorizeString("Static Information"));
+        UI::Text(colorize::CS("Static Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
         UI::Text("Current User: " + g_currUserName);
         UI::Text("Version: " + g_version);
         UI::Text("Creation Date: " + g_creationDate);
@@ -28,22 +28,22 @@ void RenderInterface() {
         UI::Separator();
         UI::Separator();
 
-        UI::Text(ColorizeString("Class Information"));
+        UI::Text(colorize::CS("Class Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
         g_className = UI::InputText("Class/File Name: ", g_className);
         g_description = UI::InputText("Description: ", g_description);
 
         UI::Separator();
         UI::Separator();
 
-        UI::Text(ColorizeString("Current Block/Item Information"));
-        UI::Text((g_latestChange == g_currentBlock ? ColorizeString("Current Block: " + g_currentBlock + " <--") : "Current Block: " + g_currentBlock));
-        UI::Text((g_latestChange == g_currentItem ? ColorizeString("Current Item: " + g_currentItem + " <--") : "Current Item: " + g_currentItem));
-        UI::Text(ColorizeString("Latest Change: " + g_latestChange));
+        UI::Text(colorize::CS("Current Block/Item Information", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
+        UI::Text((g_latestChange == g_currentBlock ? colorize::CS("Current Block: " + g_currentBlock + " <--", {"fff7b3", "d1f799"}, colorize::GradientMode::linear) : "Current Block: " + g_currentBlock));
+        UI::Text((g_latestChange == g_currentItem ? colorize::CS("Current Item: " + g_currentItem + " <--", {"fff7b3", "d1f799"}, colorize::GradientMode::linear) : "Current Item: " + g_currentItem));
+        UI::Text(colorize::CS("Latest Change: " + g_latestChange, {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
 
         UI::Separator();
         UI::Separator();
 
-        UI::Text(ColorizeString("List of combos to replace/delete/add/move:"));
+        UI::Text(colorize::CS("List of combos to replace/delete/add/move:", {"fff7b3", "d1f799"}, colorize::GradientMode::linear));
 
         if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) { DeleteAll(); }
         UI::SameLine();
@@ -102,12 +102,12 @@ void RenderInterface() {
                 g_methodTypes[i] = MethodType::DELETE;
             }
             UI::SameLine();
-            if (UI::RadioButton("Add##" + (i + 1), g_methodTypes[i] == MethodType::ADD)) {
-                g_methodTypes[i] = MethodType::ADD;
+            if (UI::RadioButton("Place##" + (i + 1), g_methodTypes[i] == MethodType::PLACE)) {
+                g_methodTypes[i] = MethodType::PLACE;
             }
             UI::SameLine();
-            if (UI::RadioButton("Move##" + (i + 1), g_methodTypes[i] == MethodType::MOVE)) {
-                g_methodTypes[i] = MethodType::MOVE;
+            if (UI::RadioButton("PlaceRelative##" + (i + 1), g_methodTypes[i] == MethodType::PLACERELATIVE)) {
+                g_methodTypes[i] = MethodType::PLACERELATIVE;
             }
 
             bool isLastIndex = (i == g_blockInputsArray.Length - 1);

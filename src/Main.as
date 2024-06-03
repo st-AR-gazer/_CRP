@@ -19,8 +19,8 @@ array<vec3> g_rotationYPRArray;
 enum MethodType {
     REPLACE,
     DELETE,
-    ADD,
-    MOVE
+    PLACE,
+    PLACERELATIVE
 };
 
 string g_currentBlock = "placeholder block name";
