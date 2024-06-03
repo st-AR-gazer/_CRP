@@ -153,23 +153,18 @@ void RenderInterface() {
 
         UI::Separator();
 
-        if (UI::Button("Save")) {
-            Json::Value settings = CreateFile();
-            string fileName = g_className + ".json";
-            filePath = IO::FromStorageFolder(fileName);
-
-            IO::File file(filePath, IO::FileMode::Write);
-            file.Write(Json::Write(settings));
-            file.Close();
-        }
-
-        if (filePath != "") {
-            if (UI::Button("Open Folder")) {
-                OpenFolder(IO::FromStorageFolder(""));
-            }
-            UI::Text("File saved at: " + filePath);
-        }
+        RenderSaveOptions();
 
         UI::End();
+    }
+}
+
+void RenderSaveOptions() {
+    if (UI::Button("Save")) {
+        GenerateCSharpClass();
+    }
+    if (filePath != "") {
+        if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
+        UI::Text("File saved at: " + filePath);
     }
 }

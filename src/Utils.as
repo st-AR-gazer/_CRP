@@ -1,15 +1,9 @@
 string MethodTypeToString(MethodType method) {
     if (method == MethodType::REPLACE) return "replace";
     if (method == MethodType::DELETE) return "delete";
-    if (method == MethodType::PLACE) return "add";
-    if (method == MethodType::PLACERELATIVE) return "move";
+    if (method == MethodType::PLACE) return "place";
+    if (method == MethodType::PLACERELATIVE) return "placerelative";
     return "";
-}
-
-void OpenFolder(const string &in path) {
-    if (IO::FolderExists(path)) {
-        OpenExplorerPath(path);
-    }
 }
 
 bool g_trunchateAll = false;
