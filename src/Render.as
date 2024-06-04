@@ -1,5 +1,5 @@
 uint g_hiddenCount = 0;
-bool showAllItems = false;
+bool showAllItems;
 bool showTruncateConfirmation = false;
 int truncateStartTime = 0;
 const int confirmationDuration = 10000;
@@ -108,11 +108,13 @@ void RenderInterface() {
                 }
             }
             UI::SameLine();
-            if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
-                g_blockOutputs[i] = g_latestChange;
-                CheckAndUpdateBlockType(i, g_latestChange, true);
-                bool isValid = ValidateIndexTypes(i);
-                UpdateUIWithValidationResult(i, isValid);
+            if (MethodTypeToString(MethodType::DELETE) != "Delete") {
+                if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
+                    g_blockOutputs[i] = g_latestChange;
+                    CheckAndUpdateBlockType(i, g_latestChange, true);
+                    bool isValid = ValidateIndexTypes(i);
+                    UpdateUIWithValidationResult(i, isValid);
+                }
             }
             UI::SameLine();
             if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
