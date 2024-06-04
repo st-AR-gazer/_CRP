@@ -1,12 +1,17 @@
 array<string> knownBlocks;
 array<string> knownItems;
 
+void LoadBlockAndItemLists() {
+    knownBlocks = LoadJsonArray("src/data/BlockNames.json");
+    knownItems = LoadJsonArray("src/data/ItemNames.json");
+}
+
 array<string> LoadJsonArray(const string &in filePath) {
     string fileContents = _IO::ReadSourceFileToEnd(filePath);
 
     array<string> elements;
     Json::Value root = Json::Parse(fileContents);
-
+    
     if (root.GetType() == Json::Type::Array) {
         for (uint i = 0; i < root.Length; i++) {
             elements.InsertLast(root[i]);
@@ -14,8 +19,14 @@ array<string> LoadJsonArray(const string &in filePath) {
     } else {
         log("Error: Expected JSON array", LogLevel::Error, 66, "LoadJsonArray");
     }
-
+    
     return elements;
+}
+
+BlockType DetermineBlockType(const string &in name) {
+    if (knownBlocks.Find(name) >= 0) return BlockType::BLOCK;
+    if (knownItems.Find(name) >= 0) return BlockType::ITEM;
+    return BlockType::CUSTOM;
 }
 
 void InitializeBlockAndItemValidation() {
