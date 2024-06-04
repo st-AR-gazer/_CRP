@@ -106,7 +106,7 @@ void RenderInterface() {
                     g_blockOutputs[i] = g_latestChange;
                 }
             }
-                
+              
             UI::SameLine();
             if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
                 g_blockInputsArray.RemoveAt(i);
