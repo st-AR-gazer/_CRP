@@ -42,8 +42,6 @@ string GenerateMethodContent(MethodType methodType, array<string> inputs, const 
     return methodContent;
 }
 
-
-
 string BlockTypeToString(BlockType type) {
     switch (type) {
         case BlockType::AUTO:
@@ -87,7 +85,7 @@ string GeneratePlace(const string &in block, const string &in newBlock, const st
     return "        map.place(\"" + block + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
 }
 
-string GeneratePlaceRelative(array<string> blocks, const string &in newBlock, const string &in type) { 
+string GeneratePlaceRelative(array<string> blocks, const string &in newBlock, const string &in type) {
     string output = "";
     for (uint i = 0; i < blocks.Length; i++) {
         output += "        map.placeRelative(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";

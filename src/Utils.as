@@ -17,6 +17,20 @@ void DeleteAll() {
     g_hiddenCount = 0;
 }
 
+BlockType DetermineBlockType(const string &in name) {
+    bool isBlock = knownBlocks.Find(name) >= 0;
+    bool isItem = knownItems.Find(name) >= 0;
+
+    if (isBlock && isItem) {
+        return BlockType::CUSTOM;
+    } else if (isBlock) {
+        return BlockType::BLOCK;
+    } else if (isItem) {
+        return BlockType::ITEM;
+    }
+    return BlockType::AUTO;
+}
+
 bool CheckAndUpdateBlockType(uint index, const string &in input, bool isOutput = false) {
     if (input == "") {
         g_blockTypes[index] = BlockType::AUTO;
@@ -33,29 +47,3 @@ bool CheckAndUpdateBlockType(uint index, const string &in input, bool isOutput =
     }
 }
 
-array<array<BlockType>> g_inputTypes;
-array<BlockType> g_outputTypes;
-
-bool ValidateIndexTypes(uint index) {
-    if (g_blockInputsArray[index] == array<string> ()) return true; // Valid if no inputs
-
-    BlockType expectedType = g_inputTypes[index] == array<BlockType> () ? g_outputTypes[index] : g_inputTypes[index][0];
-
-    for (uint j = 0; j < g_inputTypes[index].Length; j++) {
-        if (g_inputTypes[index][j] != expectedType) {
-            return false;
-        }
-    }
-
-    return g_outputTypes[index] == expectedType;
-}
-
-void UpdateBlockTypes(uint index) {
-    g_inputTypes[index].Resize(g_blockInputsArray[index].Length);
-    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
-        g_inputTypes[index][j] = DetermineBlockType(g_blockInputsArray[index][j]);
-    }
-    g_outputTypes[index] = DetermineBlockType(g_blockOutputs[index]);
-}
-
-// TODO: IMPLEMENT COROUTINE SO THAT THE PREFORMACE IS NOT AFFECTED
