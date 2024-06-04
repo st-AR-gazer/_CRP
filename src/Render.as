@@ -108,7 +108,8 @@ void RenderInterface() {
                 }
             }
             UI::SameLine();
-            if (MethodTypeToString(MethodType::DELETE) != "delete") {
+            print(MethodTypeToString(g_methodTypes[i]));
+            if (MethodTypeToString(g_methodTypes[i]) != "delete") {
                 print("MethodTypeToString(MethodType::DELETE) != \"Delete\"");
                 if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
                     g_blockOutputs[i] = g_latestChange;
