@@ -1,5 +1,5 @@
 uint g_hiddenCount = 0;
-bool showAllItems;
+bool showAllItems = false;
 bool showTruncateConfirmation = false;
 int truncateStartTime = 0;
 const int confirmationDuration = 10000;
@@ -108,7 +108,7 @@ void RenderInterface() {
                 }
             }
             UI::SameLine();
-            if (MethodTypeToString(MethodType::DELETE) != "Delete") {
+            if (MethodTypeToString(MethodType::DELETE) != "delete") {
                 print("MethodTypeToString(MethodType::DELETE) != \"Delete\"");
                 if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
                     g_blockOutputs[i] = g_latestChange;
