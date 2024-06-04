@@ -101,9 +101,12 @@ void RenderInterface() {
                 }
             }
             UI::SameLine();
-            if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
-                g_blockOutputs[i] = g_latestChange;
+            if (MethodTypeToString(g_methodTypes[i]) != "delete") {
+                if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
+                    g_blockOutputs[i] = g_latestChange;
+                }
             }
+                
             UI::SameLine();
             if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
                 g_blockInputsArray.RemoveAt(i);
