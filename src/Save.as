@@ -16,32 +16,44 @@ string GenerateCSharpClass() {
 
 string GenerateMethodContent(MethodType methodType, array<string> inputs, const string &in output, BlockType type) {
     string typeStr = BlockTypeToString(type);
+    string methodContent = "";
+
     switch (methodType) {
         case MethodType::REPLACE:
-            return GenerateReplace(inputs, output, typeStr);
+            methodContent = GenerateReplace(inputs, output, typeStr);
+            break;
         case MethodType::DELETE:
-            return GenerateDelete(inputs);
+            methodContent = GenerateDelete(inputs);
+            break;
         case MethodType::PLACE:
-            return GeneratePlace(inputs[0], output, typeStr);
+            methodContent = GeneratePlace(inputs[0], output, typeStr);
+            break;
         case MethodType::PLACERELATIVE:
-            return GeneratePlaceRelative(inputs, output, typeStr);
+            methodContent = GeneratePlaceRelative(inputs, output, typeStr);
+            break;
         default:
             return "";
     }
+
+    if (type == BlockType::CUSTOM) {
+        methodContent = "// Ambiguous type conflict detected. The following line(s) have been commented out:\n" + "// " + methodContent;
+    }
+
+    return methodContent;
 }
 
 string BlockTypeToString(BlockType type) {
     switch (type) {
         case BlockType::AUTO:
-            return "Auto";
+            return "auto";
         case BlockType::BLOCK:
-            return "Block";
+            return "block";
         case BlockType::ITEM:
-            return "Item";
+            return "item";
         case BlockType::CUSTOM:
-            return "Custom";
+            return "custom";
         default:
-            return "Unknown";
+            return "unknown";
     }
 }
 
@@ -73,7 +85,7 @@ string GeneratePlace(const string &in block, const string &in newBlock, const st
     return "        map.place(\"" + block + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
 }
 
-string GeneratePlaceRelative(array<string> blocks, const string &in newBlock, const string &in type) { 
+string GeneratePlaceRelative(array<string> blocks, const string &in newBlock, const string &in type) {
     string output = "";
     for (uint i = 0; i < blocks.Length; i++) {
         output += "        map.placeRelative(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";

@@ -14,9 +14,6 @@ array<MethodType> g_methodTypes;
 array<vec3> g_coordsXYZArray;
 array<vec3> g_rotationYPRArray;
 
-array<string> knownBlocks;
-array<string> knownItems;
-
 enum MethodType {
     REPLACE,
     DELETE,
@@ -27,40 +24,14 @@ enum MethodType {
 string g_latestChange = "placeholder latest change";
 
 void Main() {
-    LoadBlockAndItemLists();
+    InitializeAllowedCharacters();
+    InitializeBlockAndItemValidation();
+
     while (true) {
         CallFunc();
         yield();
     }
     log("Auto Alteration (Custom Replace Profiles) v " + g_version + " loaded.", LogLevel::Info, 41, "Main");
-}
-
-void LoadBlockAndItemLists() {
-    knownBlocks = LoadJsonArray("src/data/BlockNames.json");
-    knownItems = LoadJsonArray("src/data/ItemNames.json");
-}
-
-array<string> LoadJsonArray(const string &in filePath) {
-    string fileContents = _IO::ReadSourceFileToEnd(filePath);
-
-    array<string> elements;
-    Json::Value root = Json::Parse(fileContents);
-    
-    if (root.GetType() == Json::Type::Array) {
-        for (uint i = 0; i < root.Length; i++) {
-            elements.InsertLast(root[i]);
-        }
-    } else {
-        log("Error: Expected JSON array", LogLevel::Error, 66, "LoadJsonArray");
-    }
-    
-    return elements;
-}
-
-BlockType DetermineBlockType(const string &in name) {
-    if (knownBlocks.Find(name) >= 0) return BlockType::BLOCK;
-    if (knownItems.Find(name) >= 0) return BlockType::ITEM;
-    return BlockType::CUSTOM;
 }
 
 void CallFunc() {
@@ -77,7 +48,7 @@ void CallFunc() {
 
     auto editor = cast<CGameCtnEditorFree>(app.Editor);
     if (editor is null) { return; }
-    
+
     CheckChanges(editor);
 }
 
