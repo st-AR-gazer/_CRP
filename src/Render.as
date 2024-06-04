@@ -1,4 +1,5 @@
 uint g_hiddenCount = 0;
+bool showAllItems = false;
 bool showTruncateConfirmation = false;
 int truncateStartTime = 0;
 const int confirmationDuration = 10000;
