@@ -25,7 +25,9 @@ enum MethodType {
 string g_latestChange = "placeholder latest change";
 
 void Main() {
+    InitializeAllowedCharacters();
     LoadBlockAndItemLists();
+
     while (true) {
         CallFunc();
         yield();
