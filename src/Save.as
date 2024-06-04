@@ -45,15 +45,15 @@ string GenerateMethodContent(MethodType methodType, array<string> inputs, const 
 string BlockTypeToString(BlockType type) {
     switch (type) {
         case BlockType::AUTO:
-            return "Auto";
+            return "auto";
         case BlockType::BLOCK:
-            return "Block";
+            return "block";
         case BlockType::ITEM:
-            return "Item";
+            return "item";
         case BlockType::CUSTOM:
-            return "Custom";
+            return "custom";
         default:
-            return "Unknown";
+            return "unknown";
     }
 }
 

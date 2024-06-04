@@ -1,57 +1,57 @@
-uint g_hiddenCount = 0;
-bool showAllItems = false;
-bool showTruncateConfirmation = false;
-int truncateStartTime = 0;
-const int confirmationDuration = 10000;
-
-enum BlockType {
-    AUTO,
-    BLOCK,
-    ITEM,
-    CUSTOM
-}
-
-array<BlockType> g_blockTypes;
-
-void RenderMenu() {
-    if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
-        S_showInterface = !S_showInterface;
-    }
-}
-
-void RenderInterface() {
-    if (!S_showInterface) return;
-
-    if (UI::Begin(Colorize(Icons::Connectdevelop + Icons::Random + "CRP (Auto Alteration) Helper", {"0063eC", "33FFFF"}), S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
-
-        // Static Information
-        UI::Text("Static Information");
-        UI::Text("Current User: " + g_currUserName);
-        UI::Text("Version: " + g_version);
-        UI::Text("Creation Date: " + g_creationDate);
-        UI::Separator();
-
-        // Class Information
-        UI::Text("Class Information");
-        _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not.");
-        g_className = UI::InputText("Class/File Name: ", g_className);
-        g_description = UI::InputText("Description: ", g_description);
-        UI::Separator();
-
-        // Current Block/Item Information
-        UI::Text("Current Block/Item Information");
-        UI::Text("Latest Change: " + Colorize(g_latestChange, {"fff7b3", "d1f799"}));
-        UI::Separator();
-
-        // List of Combos
-        UI::Text("List of combos to replace/delete/add/move:");
-        
-        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
-            showTruncateConfirmation = true;
-            truncateStartTime = Time::Now;
-        }
-        UI::SameLine();
-        uint hiddenCount = 0;
+uint g_hiddenCount = 0; 
+bool showAllItems;
+bool showTruncateConfirmation = false; 
+int truncateStartTime = 0; 
+const int confirmationDuration = 10000; 
+ 
+enum BlockType { 
+    AUTO, 
+    BLOCK, 
+    ITEM, 
+    CUSTOM 
+} 
+ 
+array<BlockType> g_blockTypes; 
+ 
+void RenderMenu() { 
+    if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) { 
+        S_showInterface = !S_showInterface; 
+    } 
+} 
+ 
+void RenderInterface() { 
+    if (!S_showInterface) return; 
+ 
+    if (UI::Begin(Colorize(Icons::Connectdevelop + Icons::Random + "CRP (Auto Alteration) Helper", {"0063eC", "33FFFF"}), S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) { 
+         
+        // Static Information 
+        UI::Text("Static Information"); 
+        UI::Text("Current User: " + g_currUserName); 
+        UI::Text("Version: " + g_version); 
+        UI::Text("Creation Date: " + g_creationDate); 
+        UI::Separator(); 
+ 
+        // Class Information 
+        UI::Text("Class Information"); 
+        _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not."); 
+        g_className = UI::InputText("Class/File Name: ", g_className); 
+        g_description = UI::InputText("Description: ", g_description); 
+        UI::Separator(); 
+ 
+        // Current Block/Item Information 
+        UI::Text("Current Block/Item Information"); 
+        UI::Text("Latest Change: " + Colorize(g_latestChange, {"fff7b3", "d1f799"})); 
+        UI::Separator(); 
+ 
+        // List of Combos 
+        UI::Text("List of combos to replace/delete/add/move:"); 
+         
+        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) { 
+            showTruncateConfirmation = true; 
+            truncateStartTime = Time::Now; 
+        } 
+        UI::SameLine(); 
+        uint hiddenCount = 0; 
         if (UI::Button(showAllItems ? "Hide Indexes" : "Show Indexes")) { showAllItems = !showAllItems; }
 
         UI::Text("Hidden Items: " + g_hiddenCount);
@@ -84,8 +84,12 @@ void RenderInterface() {
             UI::Text("Block Inputs:");
             UI::SameLine();
 
-            // Validate the current index
-            bool isValid = ValidateIndexTypes(i);
+            string validationStatus = "Validation: ";
+            bool blockValidationStatus;
+            bool itemValidationStatus;
+            if (knownBlocks.Find(g_blockTypes[i])) { blockValidationStatus = true; }
+            if (knownItems.Find(g_blockTypes[i])) { itemValidationStatus = true; }
+            validationStatus += blockValidationStatus && itemValidationStatus ? "\\$f00✗ Invalid" : "\\$0f0✔ Valid"; 
             UI::Text(validationStatus);
 
             RenderBlockTypeUI(i);

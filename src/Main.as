@@ -14,11 +14,6 @@ array<MethodType> g_methodTypes;
 array<vec3> g_coordsXYZArray;
 array<vec3> g_rotationYPRArray;
 
-array<string> knownBlocks;
-array<string> knownItems;
-dictionary knownBlocksDict;
-dictionary knownItemsDict;
-
 enum MethodType {
     REPLACE,
     DELETE,
@@ -30,45 +25,13 @@ string g_latestChange = "placeholder latest change";
 
 void Main() {
     InitializeAllowedCharacters();
-    LoadBlockAndItemLists();
-
-    InitializeValidation(); // Initial Validation
+    InitializeBlockAndItemValidation();
 
     while (true) {
         CallFunc();
         yield();
     }
     log("Auto Alteration (Custom Replace Profiles) v " + g_version + " loaded.", LogLevel::Info, 41, "Main");
-}
-
-void LoadBlockAndItemLists() {
-    knownBlocks = LoadJsonArray("src/data/BlockNames.json");
-    knownItems = LoadJsonArray("src/data/ItemNames.json");
-
-    // Convert arrays into dictionaries
-    for (uint i = 0; i < knownBlocks.Length; i++) {
-        knownBlocksDict[knownBlocks[i]] = true;
-    }
-    for (uint i = 0; i < knownItems.Length; i++) {
-        knownItemsDict[knownItems[i]] = true;
-    }
-}
-
-array<string> LoadJsonArray(const string &in filePath) {
-    string fileContents = _IO::ReadSourceFileToEnd(filePath);
-
-    array<string> elements;
-    Json::Value root = Json::Parse(fileContents);
-    
-    if (root.GetType() == Json::Type::Array) {
-        for (uint i = 0; i < root.Length; i++) {
-            elements.InsertLast(root[i]);
-        }
-    } else {
-        log("Error: Expected JSON array", LogLevel::Error, 66, "LoadJsonArray");
-    }
-
-    return elements;
 }
 
 void CallFunc() {
