@@ -16,19 +16,33 @@ string GenerateCSharpClass() {
 
 string GenerateMethodContent(MethodType methodType, array<string> inputs, const string &in output, BlockType type) {
     string typeStr = BlockTypeToString(type);
+    string methodContent = "";
+
     switch (methodType) {
         case MethodType::REPLACE:
-            return GenerateReplace(inputs, output, typeStr);
+            methodContent = GenerateReplace(inputs, output, typeStr);
+            break;
         case MethodType::DELETE:
-            return GenerateDelete(inputs);
+            methodContent = GenerateDelete(inputs);
+            break;
         case MethodType::PLACE:
-            return GeneratePlace(inputs[0], output, typeStr);
+            methodContent = GeneratePlace(inputs[0], output, typeStr);
+            break;
         case MethodType::PLACERELATIVE:
-            return GeneratePlaceRelative(inputs, output, typeStr);
+            methodContent = GeneratePlaceRelative(inputs, output, typeStr);
+            break;
         default:
             return "";
     }
+
+    if (type == BlockType::CUSTOM) {
+        methodContent = "// Ambiguous type conflict detected. The following line(s) have been commented out:\n" + "// " + methodContent;
+    }
+
+    return methodContent;
 }
+
+
 
 string BlockTypeToString(BlockType type) {
     switch (type) {
