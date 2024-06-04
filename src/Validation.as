@@ -53,6 +53,20 @@ BlockType DetermineBlockType(const string &in itemName) {
     }
 }
 
+/*BlockType DetermineBlockType(const string &in name) {
+    bool isBlock = knownBlocks.Find(name) >= 0;
+    bool isItem = knownItems.Find(name) >= 0;
+
+    if (isBlock && isItem) {
+        return BlockType::CUSTOM;
+    } else if (isBlock) {
+        return BlockType::BLOCK;
+    } else if (isItem) {
+        return BlockType::ITEM;
+    }
+    return BlockType::AUTO;
+}*/
+
 // ClassName Validation
 
 array<string> g_allowedCharacters;
