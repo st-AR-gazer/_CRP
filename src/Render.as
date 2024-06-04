@@ -239,7 +239,7 @@ void RenderBlockTypeUI(uint index) {
 void RenderSaveOptions() {
     bool isClassNameValid = IsValidClassName(g_className);
     if (!isClassNameValid) {
-        _UI::SimpleTooltip("Class name can only contain alphanumeric characters and underscores.");
+        UI::Text("Class name can only contain alphabetic characters and underscores.");
     }
     if (_UI::DisabledButton(!isClassNameValid, "Save")) {
         string classContent = GenerateCSharpClass();
