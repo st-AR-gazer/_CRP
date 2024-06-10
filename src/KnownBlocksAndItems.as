@@ -1,9 +1,18 @@
 array<string> knownBlocks;
 array<string> knownItems;
 
+array<string> g_knownComponents;
+
 void LoadBlockAndItemLists() {
     knownBlocks = LoadJsonArray("src/data/BlockNames.json");
     knownItems = LoadJsonArray("src/data/ItemNames.json");
+
+    for (uint i = 0; i < knownBlocks.Length; i++) {
+        g_knownComponents.InsertLast(knownBlocks[i]);
+    }
+    for (uint i = 0; i < knownItems.Length; i++) {
+        g_knownComponents.InsertLast(knownItems[i]);
+    }
 }
 
 array<string> LoadJsonArray(const string &in filePath) {

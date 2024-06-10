@@ -28,24 +28,56 @@ class UiInfo {
     const int confirmationDuration = 10000;
 
     string latestChange = "placeholder latest change";
+
+    void CheckChanges(CGameCtnEditorFree@ e) {
+        string selectedNodeName = e.PluginMapType.Inventory.CurrentSelectedNode.Name;
+
+        if (selectedNodeName != "") {
+            latestChange = selectedNodeName;
+        }
+    }
 }
 
 array<ComponentInfo> components;
 class ComponentInfo {
-    int id; // Used as an index for the component
+    int index;
     
+    vec3 position;
+    vec3 rotation; // Yaw, Pitch, Roll
+
     array<string> componentInputArray;
     string componentOutput;
 
-    vec3 position;
-    vec3 rotation; // Yaw, Pitch, Roll
+    bool hidden = false;
 
     MethodType methodType;
     ComponentType componentType;
 
-    ComponentInfo(uint _id = 0, const vec3 &in _pos = vec3(0, 0, 0), const vec3 &in _rot = vec3(0, 0, 0)) {
-        id = _id;
+    ComponentInfo(uint _index = 0, const vec3 &in _pos = vec3(0, 0, 0), const vec3 &in _rot = vec3(0, 0, 0)) {
+        index = _index;
         position = _pos;
         rotation = _rot;
+    }
+
+    bool IsCompenentInputKnown() {
+        if (componentInputArray.Find(g_knownComponents)) {
+            return true;
+        } else return false;
+    }
+
+    array<string> ComponentMatches() {
+        
+    }
+}
+
+void AddNewComponent() {
+    uint newIndex = components.Length;
+    components.InsertLast(ComponentInfo(newIndex));
+}
+
+void RemoveComponent(uint index) {
+    components.RemoveAt(index);
+    for (uint i = index; i < components.Length; i++) {
+        components[i].index = i;
     }
 }

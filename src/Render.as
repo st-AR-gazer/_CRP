@@ -58,7 +58,7 @@ void RenderComboList() {
     }
 
     if (UI::Button("Add New Block/Item Combo")) {
-        components.InsertLast(ComponentInfo());
+        AddNewComponent();
     }
 }
 
@@ -110,7 +110,7 @@ void RenderComboItem(uint index) {
     }
     UI::SameLine();
     if (UI::ButtonColored("Delete Index " + (index + 1), 0.0f, 0.6f, 0.6f)) {
-        components.RemoveAt(index);
+        RemoveComponent(index);
     }
 
     switch (components[index].methodType) {

@@ -53,18 +53,18 @@ string GenerateMetadata() {
            "// Description: " + general.description + "\n\n";
 }
 
-string GenerateReplace(array<string> blocks, const string &in newBlock, const string &in type) {
+string GenerateReplace(array<string> sourceBlocks, const string &in newBlock, const string &in type) {
     string output = "";
-    for (uint i = 0; i < blocks.Length; i++) {
-        output += "        map.replace(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
+    for (uint i = 0; i < sourceBlocks.Length; i++) {
+        output += "        map.replace(\"" + sourceBlocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
     }
     return output;
 }
 
-string GenerateDelete(const array<string> &blocks) {
+string GenerateDelete(const array<string> &sourceBlocks) {
     string output = "";
-    for (uint i = 0; i < blocks.Length; i++) {
-        output += "        map.delete(\"" + blocks[i] + "\");\n";
+    for (uint i = 0; i < sourceBlocks.Length; i++) {
+        output += "        map.delete(\"" + sourceBlocks[i] + "\");\n";
     }
     return output;
 }
@@ -73,10 +73,10 @@ string GeneratePlace(const string &in block, const string &in newBlock, const st
     return "        map.place(\"" + block + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
 }
 
-string GeneratePlaceRelative(array<string> blocks, const string &in newBlock, const string &in type) { 
+string GeneratePlaceRelative(array<string> sourceBlocks, const string &in newBlock, const string &in type) { 
     string output = "";
-    for (uint i = 0; i < blocks.Length; i++) {
-        output += "        map.placeRelative(\"" + blocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
+    for (uint i = 0; i < sourceBlocks.Length; i++) {
+        output += "        map.placeRelative(\"" + sourceBlocks[i] + "\", \"" + newBlock + "\", BlockType." + type + ");\n";
     }
     return output;
 }

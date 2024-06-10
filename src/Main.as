@@ -17,7 +17,7 @@ void CallFunc() {
     if (app is null) return;
     auto editor = cast<CGameCtnEditorFree>(app.Editor);
     if (editor is null) { return; }
-    CheckChanges(editor);
+    ui.CheckChanges(editor);
 
     auto net = cast<CGameNetwork>(app.Network);
     if (net is null) return;
@@ -27,12 +27,4 @@ void CallFunc() {
 
     auto map = cast<CGameCtnChallenge>(app.RootMap);
     if (map is null) return;
-}
-
-void CheckChanges(CGameCtnEditorFree@ e) {
-    string selectedNodeName = e.PluginMapType.Inventory.CurrentSelectedNode.Name;
-
-    if (selectedNodeName != "") {
-        ui.latestChange = selectedNodeName;
-    }
 }
