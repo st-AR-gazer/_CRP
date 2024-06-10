@@ -1,5 +1,3 @@
-
-
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
         S_showInterface = !S_showInterface;
@@ -11,121 +9,136 @@ void RenderInterface() {
 
     if (UI::Begin(Colorize(Icons::Connectdevelop + Icons::Random + "CRP (Auto Alteration) Helper", {"0063eC", "33FFFF"}), S_showInterface, UI::WindowFlags::NoCollapse | UI::WindowFlags::AlwaysAutoResize)) {
         
-        // Static Information
-        UI::Text("Static Information");
-        UI::Text("Current User: " + general.userName);
-        UI::Text("Version: " + general.version);
-        UI::Text("Creation Date: " + general.creationDate);
+        RenderStaticInfo();
         UI::Separator();
-
-        // Class Information
-        UI::Text("Class Information");
-        _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not.");
-        general.className = UI::InputText("Class/File Name: ", general.className);
-        general.description = UI::InputText("Description: ", general.description);
+        RenderClassInfo();
         UI::Separator();
-
-        // Current Block/Item Information
-        UI::Text("Current Block/Item Information");
-        UI::Text("Latest Change: " + Colorize(ui.latestChange, {"fff7b3", "d1f799"}));
+        RenderCurrentBlockInfo();
         UI::Separator();
-
-        // List of Combos
-        UI::Text("List of combos to replace/delete/add/move:");
-
-        if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
-            ui.showTruncateConfirmation = true;
-            ui.truncateStartTime = Time::Now;
-        }
-        UI::SameLine();
-        uint hiddenCount = 0;
-        if (UI::Button(ui.showAllItems ? "Hide Indexes" : "Show Indexes")) { ui.showAllItems = !ui.showAllItems; }
-        
-        UI::Text("Hidden Items: " + ui.hiddenCount);
+        RenderComboList();
         UI::Separator();
-
-        if (ui.showTruncateConfirmation) {
-            int timeLeft = (ui.confirmationDuration - (Time::Now - ui.truncateStartTime)) / 1000;
-            if (timeLeft > 0) {
-                if (UI::ButtonColored("Are you sure? Click 'HERE' to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
-                    TruncateAll();
-                    ui.showTruncateConfirmation = false;
-                }
-            } else {
-                ui.showTruncateConfirmation = false;
-            }
-            UI::Separator();
-        }
-
-        for (uint i = 0; i < components.Length; i++) {
-            if (!ui.showAllItems && i < components.Length - 3) {
-                hiddenCount++;
-                ui.hiddenCount = hiddenCount;
-                continue;
-            }
-
-            UI::Text("Index " + (i + 1));
-            UI::SameLine();
-            UI::Text("Method: " + MethodTypeToString(components[i].methodType));
-            UI::SameLine();
-            UI::Text("Block Inputs:");
-
-            RenderBlockTypeUI(i);
-            bool isLastIndex = (i == components.Length - 1);
-            float h = isLastIndex ? 0.33f : 0.61f;
-
-            if (UI::ButtonColored("Add Input to Index " + (i + 1), h, 0.6f, 0.6f)) {
-                bool exists = false;
-                for (uint k = 0; k < components[i].componentInputArray.Length; k++) {
-                    if (components[i].componentInputArray[k] == ui.latestChange) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists && ui.latestChange != "") {
-                    components[i].componentInputArray.InsertLast(ui.latestChange);
-                }
-            }
-            UI::SameLine();
-            if (MethodTypeToString(components[i].methodType) != "delete") {
-                if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
-                    components[i].componentOutput = ui.latestChange;
-                }
-            }
-              
-            UI::SameLine();
-            if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
-                components.RemoveAt(i);
-                i--;
-                continue;
-            }
-            UI::Separator();
-
-            switch (components[i].methodType) {
-                case MethodType::REPLACE:
-                    RenderReplaceUI(i);
-                    break;
-                case MethodType::DELETE:
-                    RenderDeleteUI(i);
-                    break;
-                case MethodType::PLACE:
-                    RenderPlaceUI(i);
-                    break;
-                case MethodType::PLACERELATIVE:
-                    RenderPlaceRelativeUI(i);
-                    break;
-            }
-        }
-        UI::Separator();
-
-        if (UI::Button("Add New Block/Item Combo")) {
-            components.InsertLast(ComponentInfo());
-        }
-        
-        // Save Options
         RenderSaveOptions();
 
         UI::End();
+    }
+}
+
+void RenderStaticInfo() {
+    UI::Text("Static Information");
+    UI::Text("Current User: " + general.userName);
+    UI::Text("Version: " + general.version);
+    UI::Text("Creation Date: " + general.creationDate);
+}
+
+void RenderClassInfo() {
+    UI::Text("Class Information");
+    _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not.");
+    general.className = UI::InputText("Class/File Name: ", general.className);
+    general.description = UI::InputText("Description: ", general.description);
+}
+
+void RenderCurrentBlockInfo() {
+    UI::Text("Current Block/Item Information");
+    UI::Text("Latest Change: " + Colorize(ui.latestChange, {"fff7b3", "d1f799"}));
+}
+
+void RenderComboList() {
+    UI::Text("List of combos to replace/delete/add/move:");
+
+    RenderTruncateButtons();
+
+    for (uint i = 0; i < components.Length; i++) {
+        if (!ui.showAllItems && i < components.Length - 3) {
+            ui.hiddenCount++;
+            continue;
+        }
+
+        RenderComboItem(i);
+        UI::Separator();
+    }
+
+    if (UI::Button("Add New Block/Item Combo")) {
+        components.InsertLast(ComponentInfo());
+    }
+}
+
+void RenderTruncateButtons() {
+    if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
+        ui.showTruncateConfirmation = true;
+        ui.truncateStartTime = Time::Now;
+    }
+    UI::SameLine();
+    if (UI::Button(ui.showAllItems ? "Hide Indexes" : "Show Indexes")) {
+        ui.showAllItems = !ui.showAllItems;
+    }
+    UI::Text("Hidden Items: " + ui.hiddenCount);
+    UI::Separator();
+
+    if (ui.showTruncateConfirmation) {
+        int timeLeft = (ui.confirmationDuration - (Time::Now - ui.truncateStartTime)) / 1000;
+        if (timeLeft > 0) {
+            if (UI::ButtonColored("Are you sure? Click 'HERE' to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
+                TruncateAll();
+                ui.showTruncateConfirmation = false;
+            }
+        } else {
+            ui.showTruncateConfirmation = false;
+        }
+        UI::Separator();
+    }
+}
+
+void RenderComboItem(uint index) {
+    UI::Text("Index " + (index + 1));
+    UI::SameLine();
+    UI::Text("Method: " + MethodTypeToString(components[index].methodType));
+    UI::SameLine();
+    UI::Text("Block Inputs:");
+
+    RenderBlockTypeUI(index);
+    bool isLastIndex = (index == components.Length - 1);
+    float h = isLastIndex ? 0.33f : 0.61f;
+
+    if (UI::ButtonColored("Add Input to Index " + (index + 1), h, 0.6f, 0.6f)) {
+        AddInputToIndex(index);
+    }
+    UI::SameLine();
+    if (MethodTypeToString(components[index].methodType) != "delete") {
+        if (UI::ButtonColored("Add Output to Index " + (index + 1), h, 0.6f, 0.6f)) {
+            components[index].componentOutput = ui.latestChange;
+        }
+    }
+    UI::SameLine();
+    if (UI::ButtonColored("Delete Index " + (index + 1), 0.0f, 0.6f, 0.6f)) {
+        components.RemoveAt(index);
+    }
+
+    switch (components[index].methodType) {
+        case MethodType::REPLACE:
+            RenderReplaceUI(index);
+            break;
+        case MethodType::DELETE:
+            RenderDeleteUI(index);
+            break;
+        case MethodType::PLACE:
+            RenderPlaceUI(index);
+            break;
+        case MethodType::PLACERELATIVE:
+            RenderPlaceRelativeUI(index);
+            break;
+    }
+}
+
+void AddInputToIndex(uint index) {
+    bool exists = false;
+    for (uint k = 0; k < components[index].componentInputArray.Length; k++) {
+        if (components[index].componentInputArray[k] == ui.latestChange) {
+            exists = true;
+            break;
+        }
+    }
+    if (!exists && ui.latestChange != "") {
+        components[index].componentInputArray.InsertLast(ui.latestChange);
     }
 }
 
@@ -219,11 +232,11 @@ void RenderSaveOptions() {
         string classContent = GenerateCSharpClass();
         if (classContent != "") {
             string folderPath = IO::FromStorageFolder("CRP/");
-            ui.filePath = folderPath + general.className + ".cs";
-            if (!IO::FolderExists(IO::FromStorageFolder("CRP/"))) {
-                IO::CreateFolder(IO::FromStorageFolder("CRP/"));
+            string filePath = folderPath + general.className + ".cs";
+            if (!IO::FolderExists(folderPath)) {
+                IO::CreateFolder(folderPath);
             }
-            _IO::SaveToFile(IO::FromStorageFolder("CRP/" + general.className + ".cs"), classContent);
+            _IO::SaveToFile(filePath, classContent);
         }
     }
     UI::SameLine();
