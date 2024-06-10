@@ -5,14 +5,3 @@ string MethodTypeToString(MethodType method) {
     if (method == MethodType::PLACERELATIVE) return "placerelative";
     return "";
 }
-
-bool g_trunchateAll = false;
-void DeleteAll() {
-    g_blockInputsArray.Resize(0);
-    g_blockOutputs.Resize(0);
-    g_methodTypes.Resize(0);
-    g_coordsXYZArray.Resize(0);
-    g_rotationYPRArray.Resize(0);
-    g_trunchateAll = false;
-    g_hiddenCount = 0;
-}

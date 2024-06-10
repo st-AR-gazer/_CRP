@@ -1,18 +1,4 @@
-string filePath = "";
-bool showAllItems = true;
-uint g_hiddenCount = 0;
-bool showTruncateConfirmation = false;
-int truncateStartTime = 0;
-const int confirmationDuration = 10000;
 
-enum BlockType {
-    AUTO,
-    BLOCK,
-    ITEM,
-    CUSTOM
-}
-
-array<BlockType> g_blockTypes;
 
 void RenderMenu() {
     if (UI::MenuItem("\\$29e" + Icons::Connectdevelop + Icons::Random + "\\$z CRP (Auto Alteration) Helper", "", S_showInterface)) {
@@ -27,100 +13,95 @@ void RenderInterface() {
         
         // Static Information
         UI::Text("Static Information");
-        UI::Text("Current User: " + g_currUserName);
-        UI::Text("Version: " + g_version);
-        UI::Text("Creation Date: " + g_creationDate);
+        UI::Text("Current User: " + general.userName);
+        UI::Text("Version: " + general.version);
+        UI::Text("Creation Date: " + general.creationDate);
         UI::Separator();
 
         // Class Information
         UI::Text("Class Information");
         _UI::SimpleTooltip("The name of the class/file that will be generated, please note that the name has restrictions, but the description does not.");
-        g_className = UI::InputText("Class/File Name: ", g_className);
-        g_description = UI::InputText("Description: ", g_description);
+        general.className = UI::InputText("Class/File Name: ", general.className);
+        general.description = UI::InputText("Description: ", general.description);
         UI::Separator();
 
         // Current Block/Item Information
         UI::Text("Current Block/Item Information");
-        UI::Text("Latest Change: " + Colorize(g_latestChange, {"fff7b3", "d1f799"}));
+        UI::Text("Latest Change: " + Colorize(ui.latestChange, {"fff7b3", "d1f799"}));
         UI::Separator();
 
         // List of Combos
         UI::Text("List of combos to replace/delete/add/move:");
-        
+
         if (UI::ButtonColored("Truncate All", 0.0f, 0.6f, 0.6f)) {
-            showTruncateConfirmation = true;
-            truncateStartTime = Time::Now;
+            ui.showTruncateConfirmation = true;
+            ui.truncateStartTime = Time::Now;
         }
         UI::SameLine();
         uint hiddenCount = 0;
-        if (UI::Button(showAllItems ? "Hide Indexes" : "Show Indexes")) { showAllItems = !showAllItems; }
+        if (UI::Button(ui.showAllItems ? "Hide Indexes" : "Show Indexes")) { ui.showAllItems = !ui.showAllItems; }
         
-        UI::Text("Hidden Items: " + g_hiddenCount);
+        UI::Text("Hidden Items: " + ui.hiddenCount);
         UI::Separator();
 
-        if (showTruncateConfirmation) {
-            int timeLeft = (confirmationDuration - (Time::Now - truncateStartTime)) / 1000;
+        if (ui.showTruncateConfirmation) {
+            int timeLeft = (ui.confirmationDuration - (Time::Now - ui.truncateStartTime)) / 1000;
             if (timeLeft > 0) {
                 if (UI::ButtonColored("Are you sure? Click 'HERE' to confirm (" + timeLeft + "s left)", 1.0f, 0.0f, 0.0f)) {
                     TruncateAll();
-                    showTruncateConfirmation = false;
+                    ui.showTruncateConfirmation = false;
                 }
             } else {
-                showTruncateConfirmation = false;
+                ui.showTruncateConfirmation = false;
             }
             UI::Separator();
         }
 
-        for (uint i = 0; i < g_blockInputsArray.Length; i++) {
-            if (!showAllItems && i < g_blockInputsArray.Length - 3) {
+        for (uint i = 0; i < components.Length; i++) {
+            if (!ui.showAllItems && i < components.Length - 3) {
                 hiddenCount++;
-                g_hiddenCount = hiddenCount;
+                ui.hiddenCount = hiddenCount;
                 continue;
             }
 
             UI::Text("Index " + (i + 1));
             UI::SameLine();
-            UI::Text("Method: " + MethodTypeToString(g_methodTypes[i]));
+            UI::Text("Method: " + MethodTypeToString(components[i].methodType));
             UI::SameLine();
             UI::Text("Block Inputs:");
 
             RenderBlockTypeUI(i);
-            bool isLastIndex = (i == g_blockInputsArray.Length - 1);
+            bool isLastIndex = (i == components.Length - 1);
             float h = isLastIndex ? 0.33f : 0.61f;
 
             if (UI::ButtonColored("Add Input to Index " + (i + 1), h, 0.6f, 0.6f)) {
                 bool exists = false;
-                for (uint k = 0; k < g_blockInputsArray[i].Length; k++) {
-                    if (g_blockInputsArray[i][k] == g_latestChange) {
+                for (uint k = 0; k < components[i].componentInputArray.Length; k++) {
+                    if (components[i].componentInputArray[k] == ui.latestChange) {
                         exists = true;
                         break;
                     }
                 }
-                if (!exists && g_latestChange != "") {
-                    g_blockInputsArray[i].InsertLast(g_latestChange);
+                if (!exists && ui.latestChange != "") {
+                    components[i].componentInputArray.InsertLast(ui.latestChange);
                 }
             }
             UI::SameLine();
-            if (MethodTypeToString(g_methodTypes[i]) != "delete") {
+            if (MethodTypeToString(components[i].methodType) != "delete") {
                 if (UI::ButtonColored("Add Output to Index " + (i + 1), h, 0.6f, 0.6f)) {
-                    g_blockOutputs[i] = g_latestChange;
+                    components[i].componentOutput = ui.latestChange;
                 }
             }
               
             UI::SameLine();
             if (UI::ButtonColored("Delete Index " + (i + 1), 0.0f, 0.6f, 0.6f)) {
-                g_blockInputsArray.RemoveAt(i);
-                g_blockOutputs.RemoveAt(i);
-                g_methodTypes.RemoveAt(i);
-                g_coordsXYZArray.RemoveAt(i);
-                g_rotationYPRArray.RemoveAt(i);
-                g_blockTypes.RemoveAt(i);
+                components.RemoveAt(i);
                 i--;
                 continue;
             }
             UI::Separator();
 
-            switch (g_methodTypes[i]) {
+            switch (components[i].methodType) {
                 case MethodType::REPLACE:
                     RenderReplaceUI(i);
                     break;
@@ -138,12 +119,7 @@ void RenderInterface() {
         UI::Separator();
 
         if (UI::Button("Add New Block/Item Combo")) {
-            g_blockInputsArray.InsertLast(array<string>());
-            g_blockOutputs.InsertLast("");
-            g_methodTypes.InsertLast(MethodType::REPLACE);
-            g_coordsXYZArray.InsertLast(vec3());
-            g_rotationYPRArray.InsertLast(vec3());
-            g_blockTypes.InsertLast(BlockType::AUTO);
+            components.InsertLast(ComponentInfo());
         }
         
         // Save Options
@@ -153,91 +129,89 @@ void RenderInterface() {
     }
 }
 
-
 void RenderReplaceUI(uint index) {
-    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
-        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+    for (uint j = 0; j < components[index].componentInputArray.Length; j++) {
+        components[index].componentInputArray[j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), components[index].componentInputArray[j]);
         UI::SameLine();
         if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
-            g_blockInputsArray[index].RemoveAt(j);
+            components[index].componentInputArray.RemoveAt(j);
             j--;
         }
     }
     UI::Separator();
-    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+    components[index].componentOutput = UI::InputText("New Output " + (index + 1), components[index].componentOutput);
     UI::Separator();
 }
 
 void RenderDeleteUI(uint index) {
-    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
-        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+    for (uint j = 0; j < components[index].componentInputArray.Length; j++) {
+        components[index].componentInputArray[j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), components[index].componentInputArray[j]);
         UI::SameLine();
         if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
-            g_blockInputsArray[index].RemoveAt(j);
+            components[index].componentInputArray.RemoveAt(j);
             j--;
         }
     }
 }
 
 void RenderPlaceUI(uint index) {
-    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
-    g_coordsXYZArray[index] = UI::InputFloat3("Position " + (index + 1), g_coordsXYZArray[index]);
-    g_rotationYPRArray[index] = UI::InputFloat3("Rotation " + (index + 1), g_rotationYPRArray[index]);
+    components[index].componentOutput = UI::InputText("New Output " + (index + 1), components[index].componentOutput);
+    components[index].position = UI::InputFloat3("Position " + (index + 1), components[index].position);
+    components[index].rotation = UI::InputFloat3("Rotation " + (index + 1), components[index].rotation);
 }
 
 void RenderPlaceRelativeUI(uint index) {
-    for (uint j = 0; j < g_blockInputsArray[index].Length; j++) {
-        g_blockInputsArray[index][j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), g_blockInputsArray[index][j]);
+    for (uint j = 0; j < components[index].componentInputArray.Length; j++) {
+        components[index].componentInputArray[j] = UI::InputText("Input " + (index + 1) + "_" + (j + 1), components[index].componentInputArray[j]);
         UI::SameLine();
         if (UI::ButtonColored("Delete##Input" + (index + 1) + "_" + (j + 1), 0.0f, 0.6f, 0.6f)) {
-            g_blockInputsArray[index].RemoveAt(j);
+            components[index].componentInputArray.RemoveAt(j);
             j--;
         }
     }
-    g_blockOutputs[index] = UI::InputText("New Output " + (index + 1), g_blockOutputs[index]);
+    components[index].componentOutput = UI::InputText("New Output " + (index + 1), components[index].componentOutput);
 }
 
 void RenderBlockTypeUI(uint index) {
-    if (UI::RadioButton("Replace##" + (index + 1), g_methodTypes[index] == MethodType::REPLACE)) {
-        g_methodTypes[index] = MethodType::REPLACE;
+    if (UI::RadioButton("Replace##" + (index + 1), components[index].methodType == MethodType::REPLACE)) {
+        components[index].methodType = MethodType::REPLACE;
     }
     UI::SameLine();
-    if (UI::RadioButton("Delete##" + (index + 1), g_methodTypes[index] == MethodType::DELETE)) {
-        g_methodTypes[index] = MethodType::DELETE;
+    if (UI::RadioButton("Delete##" + (index + 1), components[index].methodType == MethodType::DELETE)) {
+        components[index].methodType = MethodType::DELETE;
     }
     UI::SameLine();
-    if (UI::RadioButton("Place##" + (index + 1), g_methodTypes[index] == MethodType::PLACE)) {
-        g_methodTypes[index] = MethodType::PLACE;
+    if (UI::RadioButton("Place##" + (index + 1), components[index].methodType == MethodType::PLACE)) {
+        components[index].methodType = MethodType::PLACE;
     }
     UI::SameLine();
-    if (UI::RadioButton("PlaceRelative##" + (index + 1), g_methodTypes[index] == MethodType::PLACERELATIVE)) {
-        g_methodTypes[index] = MethodType::PLACERELATIVE;
+    if (UI::RadioButton("PlaceRelative##" + (index + 1), components[index].methodType == MethodType::PLACERELATIVE)) {
+        components[index].methodType = MethodType::PLACERELATIVE;
     }
 
-    bool showAuto = g_blockTypes[index] == BlockType::AUTO;
+    bool showAuto = components[index].componentType == ComponentType::AUTO;
 
     if (showAuto) {
-        if (UI::RadioButton("Auto##" + (index + 1), g_blockTypes[index] == BlockType::AUTO)) {
-            g_blockTypes[index] = BlockType::AUTO;
+        if (UI::RadioButton("Auto##" + (index + 1), components[index].componentType == ComponentType::AUTO)) {
+            components[index].componentType = ComponentType::AUTO;
         }
         UI::SameLine();
     }
-    if (UI::RadioButton("Block##" + (index + 1), g_blockTypes[index] == BlockType::BLOCK)) {
-        g_blockTypes[index] = BlockType::BLOCK;
+    if (UI::RadioButton("Block##" + (index + 1), components[index].componentType == ComponentType::BLOCK)) {
+        components[index].componentType = ComponentType::BLOCK;
     }
     UI::SameLine();
-    if (UI::RadioButton("Item##" + (index + 1), g_blockTypes[index] == BlockType::ITEM)) {
-        g_blockTypes[index] = BlockType::ITEM;
+    if (UI::RadioButton("Item##" + (index + 1), components[index].componentType == ComponentType::ITEM)) {
+        components[index].componentType = ComponentType::ITEM;
     }
     UI::SameLine();
-    if (UI::RadioButton("Custom##" + (index + 1), g_blockTypes[index] == BlockType::CUSTOM)) {
-        g_blockTypes[index] = BlockType::CUSTOM;
+    if (UI::RadioButton("Custom##" + (index + 1), components[index].componentType == ComponentType::CUSTOM)) {
+        components[index].componentType = ComponentType::CUSTOM;
     }
 }
 
-
 void RenderSaveOptions() {
-    bool isClassNameValid = IsValidClassName(g_className);
+    bool isClassNameValid = IsValidClassName(general.className);
     if (!isClassNameValid) {
         UI::Text("Class name can only contain alphabetic characters and underscores.");
     }
@@ -245,26 +219,20 @@ void RenderSaveOptions() {
         string classContent = GenerateCSharpClass();
         if (classContent != "") {
             string folderPath = IO::FromStorageFolder("CRP/");
-            filePath = folderPath + g_className + ".cs";
+            ui.filePath = folderPath + general.className + ".cs";
             if (!IO::FolderExists(IO::FromStorageFolder("CRP/"))) {
                 IO::CreateFolder(IO::FromStorageFolder("CRP/"));
             }
-            _IO::SaveToFile(IO::FromStorageFolder("CRP/" + g_className + ".cs"), classContent);
+            _IO::SaveToFile(IO::FromStorageFolder("CRP/" + general.className + ".cs"), classContent);
         }
     }
     UI::SameLine();
-    if (filePath != "") {
+    if (ui.filePath != "") {
         if (UI::Button("Open Folder")) { _IO::OpenFolder(IO::FromStorageFolder("")); }
-        UI::Text("File saved at: " + filePath);
+        UI::Text("File saved at: " + ui.filePath);
     }
 }
 
-
 void TruncateAll() {
-    g_blockInputsArray.Resize(0);
-    g_blockOutputs.Resize(0);
-    g_methodTypes.Resize(0);
-    g_coordsXYZArray.Resize(0);
-    g_rotationYPRArray.Resize(0);
-    g_blockTypes.Resize(0);
+    components.Resize(0);
 }

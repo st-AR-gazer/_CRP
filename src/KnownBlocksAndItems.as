@@ -23,10 +23,10 @@ array<string> LoadJsonArray(const string &in filePath) {
     return elements;
 }
 
-BlockType DetermineBlockType(const string &in name) {
-    if (knownBlocks.Find(name) >= 0) return BlockType::BLOCK;
-    if (knownItems.Find(name) >= 0) return BlockType::ITEM;
-    return BlockType::CUSTOM;
+ComponentType DetermineBlockType(const string &in name) {
+    if (knownBlocks.Find(name) >= 0) return ComponentType::BLOCK;
+    if (knownItems.Find(name) >= 0) return ComponentType::ITEM;
+    return ComponentType::CUSTOM;
 }
 
 void InitializeBlockAndItemValidation() {
