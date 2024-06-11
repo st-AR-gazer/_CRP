@@ -38,6 +38,7 @@ class UiInfo {
     }
 }
 
+array<ComponentInfo> components;
 class ComponentInfo {
     int index;
     
@@ -52,7 +53,15 @@ class ComponentInfo {
     MethodType methodType;
     ComponentType componentType;
 
-    ComponentInfo(uint _index = 0, const vec3 &in _pos = vec3(0, 0, 0), const vec3 &in _rot = vec3(0, 0, 0)) {
+    // Default constructor
+    ComponentInfo() {
+        index = 0;
+        position = vec3(0, 0, 0);
+        rotation = vec3(0, 0, 0);
+    }
+
+    // Parameterized constructor
+    ComponentInfo(uint _index, const vec3 &in _pos, const vec3 &in _rot) {
         index = _index;
         position = _pos;
         rotation = _rot;
@@ -63,13 +72,7 @@ class ComponentInfo {
             return true;
         } else return false;
     }
-
-    array<string> ComponentMatches() {
-        
-    }
 }
-array<ComponentInfo> components;
-
 
 void AddNewComponent() {
     uint newIndex = components.Length;
