@@ -29,6 +29,12 @@ class UiInfo {
 
     string latestChange = "placeholder latest change";
 
+    array<dictionary> inventoryData;
+
+    UiInfo() {
+        LoadInventoryData();
+    }
+
     void CheckChanges(CGameCtnEditorFree@ e) {
         string selectedNodeName = e.PluginMapType.Inventory.CurrentSelectedNode.Name;
 
@@ -37,11 +43,29 @@ class UiInfo {
         }
     }
 
+    void LoadInventoryData() {
+        string jsonContent = _IO::ReadFileToEnd(IO::FromStorageFolder("DownloadedData/Inventory.json"));
+        if (jsonContent != "" & latestChange != "placeholder latest change") {
+            Json::Value root = Json::Parse(jsonContent);
+            for (uint i = 0; i < root.Length; i++) {
+                dictionary item;
+                item["name"] = root[i]["name"];
+                item["keywords"] = array<string>();
+                for (uint j = 0; j < root[i]["keywords"].Length; j++) {
+                    cast<array<string>>(item["keywords"]).InsertLast(root[i]["keywords"][j]);
+                }
+                inventoryData.InsertLast(item);
+            }
+        }
+    }
+
     array<string> GetArticlesForLatestChange() {
         array<string> articles;
-        string[]@ keywords = latestChange.Split(" ");
-        for (uint i = 0; i < keywords.Length; i++) {
-            articles.InsertLast(keywords[i]);
+        for (uint i = 0; i < inventoryData.Length; i++) {
+            if (cast<string>(inventoryData[i]["name"]) == latestChange) {
+                articles = cast<array<string>>(inventoryData[i]["keywords"]);
+                break;
+            }
         }
         return articles;
     }

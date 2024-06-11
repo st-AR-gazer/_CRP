@@ -1,6 +1,6 @@
 string g_manifestUrl;
 string pluginStorageVersionPath = IO::FromStorageFolder("currentVersion.json");
-string manifestUrl = "http://maniacdn.net/ar_/CRP/manifest/manifest.json";
+string manifestUrl = "http://maniacdn.net/ar_/Custom-Replace-Profiles/manifest/manifest.json";
 
 int g_manifestVersion;
 int g_currentVersion;

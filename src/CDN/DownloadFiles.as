@@ -1,22 +1,20 @@
-string baseDataUrl = "http://maniacdn.net/ar_/CRP/Plugin/";
+string baseDataUrl = "http://maniacdn.net/ar_/Custom-Replace-Profiles/Plugin/";
 string localSaveLocation = IO::FromStorageFolder("Data/");
 
 [Setting name="Should Download New Files"]
 bool shouldDownloadNewFiles = true;
 
 void DownloadDataFromCDN() {
-    g_currentVersion = GetCurrentInstalledVersion();
+    g_currentVersion = GetCurrentVersion();
 
     if (g_manifestVersion != g_currentVersion) {
         log("Manifest Version " + g_manifestVersion + " does not match local version " + g_currentVersion + ", updating the local file with the version specified in the manifest.", LogLevel::Info, 8, "DownloadDataFromCDN");
-    } else {
-        return;
-    }
+    } else { return; }
 
     if (!shouldDownloadNewFiles) return;
     
-    DownloadData(baseDataUrl + "consolidated_maps.json", "consolidated_maps.json", localSaveLocation);
-    log("Attempted to download the consolidated maps JSON file", LogLevel::Info, 16, "DownloadDataFromCDN");
+    DownloadData(baseDataUrl + "Inventory.json", "Inventory.json", localSaveLocation);
+    log("Attempted to download the stripped Inventory JSON file", LogLevel::Info, 16, "DownloadDataFromCDN");
 }
 
 void DownloadData(const string &in url, const string &in fileName, const string &in localSaveLocation) {
@@ -32,7 +30,7 @@ void DownloadData(const string &in url, const string &in fileName, const string 
         auto data = req.String();
         StoreDatafile(data, fileName, localSaveLocation);
     } else {
-        log("Response code " + req.ResponseCode() + " Error URL: " + url, LogLevel::Error, 38, "DownloadData");
+        log("Response code " + req.ResponseCode() + " Error | URL: " + url, LogLevel::Error, 38, "DownloadData");
     }
 }
 
