@@ -25,7 +25,7 @@ class UiInfo {
     
     int truncateStartTime = 0;
     bool showTruncateConfirmation = false;
-    const int confirmationDuration = 10000;
+    int confirmationDuration = 10000;
 
     string latestChange = "placeholder latest change";
 
@@ -38,7 +38,6 @@ class UiInfo {
     }
 }
 
-array<ComponentInfo> components;
 class ComponentInfo {
     int index;
     
@@ -69,6 +68,8 @@ class ComponentInfo {
         
     }
 }
+array<ComponentInfo> components;
+
 
 void AddNewComponent() {
     uint newIndex = components.Length;
