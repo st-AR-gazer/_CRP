@@ -61,16 +61,19 @@ class ComponentInfo {
     }
 
     // Parameterized constructor
-    ComponentInfo(uint _index, const vec3 &in _pos, const vec3 &in _rot) {
+    ComponentInfo(uint _index, const vec3 &in _pos = vec3 ( ), const vec3 &in _rot = vec3 ( )) {
         index = _index;
         position = _pos;
         rotation = _rot;
     }
 
     bool IsCompenentInputKnown() {
-        if (componentInputArray.Find(g_knownComponents)) {
-            return true;
-        } else return false;
+        for (uint i = 0; i < g_knownComponents.Length; i++) {
+            if (componentInputArray.Find(g_knownComponents[i]) != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
