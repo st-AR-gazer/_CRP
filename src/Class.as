@@ -36,6 +36,15 @@ class UiInfo {
             latestChange = selectedNodeName;
         }
     }
+
+    array<string> GetArticlesForLatestChange() {
+        array<string> articles;
+        string[]@ keywords = latestChange.Split(" ");
+        for (uint i = 0; i < keywords.Length; i++) {
+            articles.InsertLast(keywords[i]);
+        }
+        return articles;
+    }
 }
 
 array<ComponentInfo> components;
@@ -49,6 +58,7 @@ class ComponentInfo {
     string componentOutput;
 
     bool hidden = false;
+    bool isComponentKnown = false;
 
     MethodType methodType;
     ComponentType componentType;
@@ -67,12 +77,14 @@ class ComponentInfo {
         rotation = _rot;
     }
 
-    bool IsCompenentInputKnown() {
+    bool IsComponentInputKnown() {
         for (uint i = 0; i < g_knownComponents.Length; i++) {
             if (componentInputArray.Find(g_knownComponents[i]) != -1) {
+                isComponentKnown = true;
                 return true;
             }
         }
+        isComponentKnown = false;
         return false;
     }
 }
