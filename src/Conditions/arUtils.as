@@ -60,7 +60,7 @@ namespace _IO {
     }
 
     void SafeSaveToFile(const string &in path, const string &in content, bool shouldUseRecursion = true, bool shouldLogFilePath = false) {
-        if (shouldLogFilePath) { log("Saving to file: " + path, LogLevel::Info, 63, "SafeSaveToFile"); }
+        if (shouldLogFilePath) { print("Saving to file: " + path + " | LogLevel::Info | SafeSaveToFile"); }
         SafeCreateFolder(path, shouldUseRecursion);
 
         IO::File file;
