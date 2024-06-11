@@ -45,7 +45,7 @@ class UiInfo {
 
     void LoadInventoryData() {
         string jsonContent = _IO::ReadFileToEnd(IO::FromStorageFolder("DownloadedData/Inventory.json"));
-        if (jsonContent != "" & latestChange != "placeholder latest change") {
+        if (jsonContent != "" && latestChange != "placeholder latest change") {
             Json::Value root = Json::Parse(jsonContent);
             for (uint i = 0; i < root.Length; i++) {
                 dictionary item;
@@ -62,7 +62,7 @@ class UiInfo {
     array<string> GetArticlesForLatestChange() {
         array<string> articles;
         for (uint i = 0; i < inventoryData.Length; i++) {
-            if (cast<string>(inventoryData[i]["name"]) == latestChange) {
+            if (string(inventoryData[i]["name"]) == latestChange) {
                 articles = cast<array<string>>(inventoryData[i]["keywords"]);
                 break;
             }

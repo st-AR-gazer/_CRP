@@ -237,7 +237,7 @@ void RenderSaveOptions() {
             if (!IO::FolderExists(folderPath)) {
                 IO::CreateFolder(folderPath);
             }
-            _IO::SaveToFile(filePath, classContent);
+            _IO::SafeSaveToFile(filePath, classContent);
         }
     }
     UI::SameLine();
