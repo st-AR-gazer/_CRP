@@ -9,7 +9,7 @@ void Main() {
         CallFunc();
         yield();
     }
-    log("Auto Alteration (Custom Replace Profiles) v" + general.version + " loaded.", LogLevel::Info, 41, "Main");
+    log("Auto Alteration (Custom Replace Profiles) v" + general.version + " loaded.", LogLevel::Info, 12, "Main");
 }
 
 void CallFunc() {

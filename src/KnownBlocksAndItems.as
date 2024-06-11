@@ -26,7 +26,7 @@ array<string> LoadJsonArray(const string &in filePath) {
             elements.InsertLast(root[i]);
         }
     } else {
-        log("Error: Expected JSON array", LogLevel::Error, 66, "LoadJsonArray");
+        log("Error: Expected JSON array", LogLevel::Error, 29, "LoadJsonArray");
     }
     
     return elements;
