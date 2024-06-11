@@ -40,6 +40,7 @@ void RenderClassInfo() {
 void RenderCurrentBlockInfo() {
     UI::Text("Current Block/Item Information");
     UI::Text("Latest Change: " + Colorize(ui.latestChange, {"fff7b3", "d1f799"}));
+    if (UI::Button("Copy Latest Change")) { IO::SetClipboard(ui.latestChange); }
 }
 
 void RenderComboList() {
