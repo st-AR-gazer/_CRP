@@ -1,6 +1,6 @@
 string g_manifestUrl;
 string pluginStorageVersionPath = IO::FromStorageFolder("currentVersion.json");
-string manifestUrl = "http://maniacdn.net/ar_/Alt-Map-Picker/manifest/manifest.json";
+string manifestUrl = "http://maniacdn.net/ar_/CRP/manifest/manifest.json";
 
 int g_manifestVersion;
 int g_currentVersion;
@@ -32,16 +32,16 @@ void ParseManifest(const string &in reqBody) {
 }
 
 void UpdateCurrentVersionIfDifferent(const int &in latestVersion) {
-    int currentInstalledVersion = GetCurrentInstalledVersion();
-    g_currentVersion = currentInstalledVersion;
+    int currentVersion = GetCurrentVersion();
+    g_currentVersion = currentVersion;
     
-    if (currentInstalledVersion != latestVersion) {
+    if (currentVersion != latestVersion) {
         DownloadDataFromCDN();
         UpdateVersionFile(latestVersion);
     }
 }
 
-int GetCurrentInstalledVersion() {
+int GetCurrentVersion() {
     string fileContents = _IO::ReadFileToEnd(pluginStorageVersionPath);
     
     Json::Value json = Json::Parse(fileContents);
